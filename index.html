@@ -34,10 +34,8 @@
       transition:color .12s ease;
       outline:none;
     }
-    .something:hover{color:#ff2b2b}          /* red hover */
-    .something:focus-visible{
-      outline:2px dashed #ff2b2b;outline-offset:2px; /* keyboard access */
-    }
+    .something:hover{color:#ff2b2b}
+    .something:focus-visible{outline:2px dashed #ff2b2b;outline-offset:2px}
 
     /* overlays for win-sequence */
     .flash{
@@ -55,11 +53,11 @@
       100% {transform:scaleY(0); opacity:0;}
     }
 
-    /* --- tiny spinning PNG bottom-right --- */
+    /* tiny spinning PNG bottom-right */
     .corner-spin{
-      position:fixed;right:10px;bottom:28px;   /* moved to bottom-right, above ticker */
-      width:26px;height:26px;                  /* very small */
-      pointer-events:none;                     /* never blocks clicks */
+      position:fixed;right:10px;bottom:28px; /* above ticker */
+      width:26px;height:26px;
+      pointer-events:none;
     }
     .corner-spin img{
       width:100%;height:100%;display:block;
@@ -71,24 +69,22 @@
       to  { transform:rotate(360deg); }
     }
 
-    /* --- bottom ticker (left -> right) --- */
+    /* bottom ticker (left -> right) */
     .ticker{
       position:fixed;left:0;right:0;bottom:0;
-      height:22px; /* slim strip */
+      height:22px;
       overflow:hidden;
-      pointer-events:none; /* don't interfere with clicks */
+      pointer-events:none;
     }
     .ticker .track{
       position:absolute;left:-100%;
       white-space:nowrap;
-      color:#6a6a6a;                /* dark gray */
+      color:#4b4b4b;                 /* darker gray text */
       font-size:clamp(9px,1.8vw,11px);
       line-height:22px;
-      animation:scroll-rl 24s linear infinite;
+      animation:scroll-rl 26s linear infinite;
     }
-    .ticker .track.track2{ animation-delay:12s; } /* stagger for seamless loop */
-
-    /* Move from just off the left edge to off the right edge */
+    .ticker .track.track2{ animation-delay:13s; }
     @keyframes scroll-rl{
       0%   { transform:translateX(0%); }
       100% { transform:translateX(200%); }
@@ -119,19 +115,17 @@
     <img src="wine_spin.png" alt="">
   </div>
 
-  <!-- bottom moving text banner: two messages, spaced and repeated -->
+  <!-- bottom moving text banner: ONLY the accepted files message, darker, with extra spacing -->
   <div class="ticker" aria-hidden="true">
     <div class="track">
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&ldquo;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;accepted files, mp3, mp4, png&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rdquo;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&ldquo;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this is not a club, this is not a class, this is not allowed&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rdquo;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&ldquo;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;accepted files, mp3, mp4, png&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rdquo;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&ldquo;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this is not a club, this is not a class, this is not allowed&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rdquo;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      &nbsp;&nbsp;accepted files,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mp3,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mp4,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;png&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      accepted files,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mp3,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mp4,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;png&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      accepted files,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mp3,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mp4,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;png&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     </div>
     <div class="track track2">
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&ldquo;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;accepted files, mp3, mp4, png&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rdquo;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&ldquo;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this is not a club, this is not a class, this is not allowed&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rdquo;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&ldquo;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;accepted files, mp3, mp4, png&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rdquo;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&ldquo;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this is not a club, this is not a class, this is not allowed&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rdquo;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      &nbsp;&nbsp;accepted files,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mp3,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mp4,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;png&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      accepted files,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mp3,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mp4,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;png&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      accepted files,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mp3,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mp4,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;png&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     </div>
   </div>
 
@@ -207,7 +201,7 @@
     (function(){
       const el = document.getElementById('submit');
       const go=()=>{
-        glitchNoiseOnce(el, 420);                 // quick glitch before draft
+        glitchNoiseOnce(el, 420);
         setTimeout(()=>{
           const email='guerrillagrotto@gmail.com';
           const subject=encodeURIComponent('submission');
