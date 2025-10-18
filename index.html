@@ -55,11 +55,11 @@
       100% {transform:scaleY(0); opacity:0;}
     }
 
-    /* --- NEW: tiny spinning PNG bottom-left --- */
+    /* --- tiny spinning PNG bottom-right --- */
     .corner-spin{
-      position:fixed;left:10px;bottom:28px;   /* sit just above ticker */
-      width:26px;height:26px;                 /* very small */
-      pointer-events:none;                    /* never blocks clicks */
+      position:fixed;right:10px;bottom:28px;   /* moved to bottom-right, above ticker */
+      width:26px;height:26px;                  /* very small */
+      pointer-events:none;                     /* never blocks clicks */
     }
     .corner-spin img{
       width:100%;height:100%;display:block;
@@ -71,7 +71,7 @@
       to  { transform:rotate(360deg); }
     }
 
-    /* --- NEW: bottom ticker (left -> right) --- */
+    /* --- bottom ticker (left -> right) --- */
     .ticker{
       position:fixed;left:0;right:0;bottom:0;
       height:22px; /* slim strip */
@@ -84,9 +84,9 @@
       color:#6a6a6a;                /* dark gray */
       font-size:clamp(9px,1.8vw,11px);
       line-height:22px;
-      animation:scroll-rl 20s linear infinite;
+      animation:scroll-rl 24s linear infinite;
     }
-    .ticker .track.track2{ animation-delay:10s; } /* stagger for seamless loop */
+    .ticker .track.track2{ animation-delay:12s; } /* stagger for seamless loop */
 
     /* Move from just off the left edge to off the right edge */
     @keyframes scroll-rl{
@@ -114,18 +114,24 @@
     </div>
   </div>
 
-  <!-- NEW: spinning corner image -->
+  <!-- spinning corner image (bottom-right) -->
   <div class="corner-spin" aria-hidden="true">
     <img src="wine_spin.png" alt="">
   </div>
 
-  <!-- NEW: bottom moving text banner -->
+  <!-- bottom moving text banner: two messages, spaced and repeated -->
   <div class="ticker" aria-hidden="true">
     <div class="track">
-      &nbsp;accepted files, mp3, mp4, png&nbsp;&nbsp;accepted files, mp3, mp4, png&nbsp;&nbsp;accepted files, mp3, mp4, png&nbsp;&nbsp;accepted files, mp3, mp4, png&nbsp;&nbsp;accepted files, mp3, mp4, png&nbsp;&nbsp;accepted files, mp3, mp4, png&nbsp;
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&ldquo;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;accepted files, mp3, mp4, png&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rdquo;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&ldquo;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this is not a club, this is not a class, this is not allowed&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rdquo;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&ldquo;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;accepted files, mp3, mp4, png&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rdquo;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&ldquo;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this is not a club, this is not a class, this is not allowed&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rdquo;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     </div>
     <div class="track track2">
-      &nbsp;accepted files, mp3, mp4, png&nbsp;&nbsp;accepted files, mp3, mp4, png&nbsp;&nbsp;accepted files, mp3, mp4, png&nbsp;&nbsp;accepted files, mp3, mp4, png&nbsp;&nbsp;accepted files, mp3, mp4, png&nbsp;&nbsp;accepted files, mp3, mp4, png&nbsp;
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&ldquo;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;accepted files, mp3, mp4, png&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rdquo;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&ldquo;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this is not a club, this is not a class, this is not allowed&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rdquo;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&ldquo;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;accepted files, mp3, mp4, png&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rdquo;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&ldquo;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this is not a club, this is not a class, this is not allowed&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rdquo;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     </div>
   </div>
 
