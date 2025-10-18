@@ -69,7 +69,7 @@
       to  { transform:rotate(360deg); }
     }
 
-    /* bottom ticker (left -> right) */
+    /* bottom ticker (visible immediately) */
     .ticker{
       position:fixed;left:0;right:0;bottom:0;
       height:22px;
@@ -77,14 +77,16 @@
       pointer-events:none;
     }
     .ticker .track{
-      position:absolute;left:-100%;
+      position:absolute;left:0; /* start on-screen so it's visible right away */
       white-space:nowrap;
-      color:#4b4b4b;                 /* darker gray text */
+      color:#3d3d3d;                 /* darker gray text */
       font-size:clamp(9px,1.8vw,11px);
       line-height:22px;
-      animation:scroll-rl 26s linear infinite;
+      animation:scroll-rl 28s linear infinite;
     }
-    .ticker .track.track2{ animation-delay:13s; }
+    .ticker .track.track2{ animation-delay:14s; } /* stagger for continuous flow */
+
+    /* move left -> right while staying visible */
     @keyframes scroll-rl{
       0%   { transform:translateX(0%); }
       100% { transform:translateX(200%); }
@@ -115,17 +117,13 @@
     <img src="wine_spin.png" alt="">
   </div>
 
-  <!-- bottom moving text banner: ONLY the accepted files message, darker, with extra spacing -->
+  <!-- bottom moving text banner -->
   <div class="ticker" aria-hidden="true">
     <div class="track">
-      &nbsp;&nbsp;accepted files,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mp3,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mp4,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;png&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      accepted files,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mp3,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mp4,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;png&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      accepted files,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mp3,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mp4,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;png&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      accepted files, mp3, mp4, png&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;welcom to the guerrilla grotto&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;accepted files, mp3, mp4, png&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;welcom to the guerrilla grotto&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     </div>
     <div class="track track2">
-      &nbsp;&nbsp;accepted files,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mp3,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mp4,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;png&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      accepted files,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mp3,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mp4,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;png&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      accepted files,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mp3,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mp4,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;png&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      accepted files, mp3, mp4, png&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;welcom to the guerrilla grotto&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;accepted files, mp3, mp4, png&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;welcom to the guerrilla grotto&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     </div>
   </div>
 
@@ -197,13 +195,13 @@
       el.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle();} });
     })();
 
-    /* SUBMIT: quick glitch before opening mailto draft */
+    /* SUBMIT: quick glitch before opening mailto draft (new email) */
     (function(){
       const el = document.getElementById('submit');
       const go=()=>{
         glitchNoiseOnce(el, 420);
         setTimeout(()=>{
-          const email='guerrillagrotto@gmail.com';
+          const email='bluetilespace@gmail.com';
           const subject=encodeURIComponent('submission');
           const body=encodeURIComponent('accepted file types: mp3, mp4, png');
           window.location.href=`mailto:${email}?subject=${subject}&body=${body}`;
