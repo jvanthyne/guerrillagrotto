@@ -15,7 +15,7 @@
       --bg: #000;          /* base background */
       --fg: #fff;          /* base foreground (text + lines) */
       --muted: #999;
-      --stroke: 1px;       /* global stroke width (updated) */
+      --stroke: 1px;       /* global stroke width */
       --cursor-stroke: 1.6px; /* custom cursor stroke */
       --plus-size: 16px;       /* custom cursor plus arm length */
       --ui-scale: 78vmin;  /* size of the main framed SVG */
@@ -38,15 +38,16 @@
       background:var(--bg);
       color:var(--fg);
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      cursor: none; /* no stock cursor */
+      cursor: none; /* hide default cursor on body */
       overflow:hidden; /* keep the layout tight */
     }
+    /* Ensure no default cursor anywhere */
+    body *{ cursor:none; }
 
     /* ==== Floating bottom marquee ==== */
     .marquee-wrap{
       position: fixed;
       left: 0; right: 0; bottom: 0; /* bottom of screen */
-      pointer-events: none; /* default: no hover except specific words */
       user-select: none;
       padding-bottom: 8px; /* float slightly above bottom edge */
     }
@@ -62,7 +63,7 @@
     @keyframes scroll{ from{transform: translateX(0);} to{transform: translateX(-50%);} }
 
     .marquee .chunk{ display:flex; gap: var(--phrase-gap); }
-    .phrase{ pointer-events:none; }
+    .phrase{ pointer-events:auto; }
     .phrase .grotto{ pointer-events:auto; transition: filter .15s ease; }
     .marquee.paused{ animation-play-state: paused; }
 
@@ -73,10 +74,6 @@
     /* ==== Centered framed composition (SVG scales evenly) ==== */
     .stage{ position: absolute; inset: 0; display: grid; place-items: center; }
     .frame{ width: min(var(--ui-scale), 92vw); height: auto; max-height: 72vh; aspect-ratio: 4 / 3; display: block; }
-
-    /* Rotating text inside right circle */
-    .rotateCCW{ animation: rotateCCW 16s linear infinite; transform-origin: 50% 50%; }
-    @keyframes rotateCCW{ from{ transform: rotate(0deg);} to{ transform: rotate(-360deg);} }
 
     /* Plus targets turn red when overlapped */
     .plus-hit.ok{ color: #d00; }
@@ -103,19 +100,20 @@
       </defs>
 
       <!-- Frame rectangle (stroke matches circles and pluses) -->
-      <g id="composition" stroke="currentColor" fill="none" stroke-width="1">
+      <g id="composition" stroke="currentColor" fill="none" stroke-width="var(--stroke)">
         <rect id="frameRect" x="120" y="120" width="560" height="360" rx="2"/>
 
         <!-- Circles (same size, centered vertically, evenly spaced horizontally) -->
         <circle id="leftCircle" cx="266.67" cy="300" r="120" />
         <circle id="rightCircle" cx="533.33" cy="300" r="120" />
 
-        <!-- Rotating issue text inside right circle, counterclockwise; size = banner size -->
-        <g class="rotateCCW">
-          <text id="issue" fill="currentColor" style="font-size: var(--text-size);" letter-spacing="0.08em">
-            <textPath href="#ringPath" startOffset="0%">ISSUE 001 — 12/12</textPath>
-          </text>
-        </g>
+        <!-- Rotating issue text along interior radius of right circle -->
+        <text id="issue" fill="currentColor" style="font-size: var(--text-size);" letter-spacing="0.08em">
+          <textPath id="issuePath" href="#ringPath" startOffset="0%">
+            ISSUE 001 — 12/12
+            <animate attributeName="startOffset" from="0%" to="100%" dur="16s" repeatCount="indefinite" />
+          </textPath>
+        </text>
 
         <!-- Larger plus signs INSIDE circles (same thin stroke). Slightly toward center, still lower-right quadrant. -->
         <!-- RIGHT (static) target -->
@@ -124,7 +122,7 @@
           <line x1="0" y1="-24" x2="0" y2="24" />
         </g>
 
-        <!-- LEFT (draggable) target -->
+        <!-- LEFT (draggable / shop link) target -->
         <g id="leftPlus" class="plus-hit" transform="translate(306.67, 340)">
           <line x1="-24" y1="0" x2="24" y2="0" />
           <line x1="0" y1="-24" x2="0" y2="24" />
@@ -168,16 +166,16 @@
     }
     buildMarquee();
 
-    // Hover on the word "grotto" pauses loop and shows affordance
+    // Hover anywhere on banner pauses loop; hover on "grotto" also gives affordance
     marquee.addEventListener('mouseover', (e)=>{
+      marquee.classList.add('paused');
       if(e.target.classList.contains('grotto')){
-        marquee.classList.add('paused');
         e.target.classList.add('hover-affordance');
       }
     });
     marquee.addEventListener('mouseout', (e)=>{
+      marquee.classList.remove('paused');
       if(e.target.classList.contains('grotto')){
-        marquee.classList.remove('paused');
         e.target.classList.remove('hover-affordance');
       }
     });
@@ -208,9 +206,9 @@
     function toggleMode(){
       guerrillaMode = !guerrillaMode;
       document.body.classList.toggle('inverted', guerrillaMode);
-      // swap all instances of grotto <-> Gurilla with glitch
+      // swap all instances of grotto <-> guerrilla grotto with glitch
       document.querySelectorAll('.grotto').forEach(el=>{
-        const to = guerrillaMode ? 'Gurilla' : 'grotto';
+        const to = guerrillaMode ? 'guerrilla grotto' : 'grotto';
         glitchSwap(el, to);
       });
     }
@@ -267,6 +265,13 @@
 
     svg.addEventListener('click', (e)=>{
       if(overlapReady){ window.location.href = 'secret.html'; }
+    });
+
+    // Left plus = shop link on GROTTO (non-inverted) page
+    leftPlus.addEventListener('click', (e)=>{
+      if(!guerrillaMode){
+        window.location.href = 'shop.html';
+      }
     });
 
     /* ================= Accessibility: keyboard fallback ================= */
