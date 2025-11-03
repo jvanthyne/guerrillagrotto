@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>guerrilla grotto</title>
+  <link rel="icon" type="image/png" href="guerrillagrottowine.png" />
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{
+      background:#000;color:#e6e6e6;
+      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+      display:grid;place-items:center;overflow:hidden; /* no scrolling */
+    }
+
+    .wrap{
+      display:flex;flex-direction:column;align-items:center;gap:2.4vh;
+      padding:6vh 6vw;text-align:center;
+    }
+
+    .line{
+      font-size:clamp(14px,3.5vw,22px);
+      letter-spacing:.02em;
+      text-transform:lowercase;
+      user-select:none;
+      white-space:nowrap;
+    }
+
+    /* interactive ONLY on the word "something" */
+    .something{
+      color:#e6e6e6;
+      cursor:pointer;
+      transition:color .12s ease;
+      outline:none;
+    }
+    .something:hover{color:#ff2b2b}          /* red hover */
+    .something:focus-visible{
+      outline:2px dashed #ff2b2b;outline-offset:2px; /* keyboard access */
+    }
+
+    /* overlays for win-sequence */
+    .flash{
+      position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;
+      transition:opacity 120ms linear;
+    }
+    .flash.on{opacity:1}
+    .crt{
+      position:fixed;inset:0;display:none;background:#fff;transform-origin:center;
+    }
+    .crt.on{display:block;animation:tvOff 600ms ease-in forwards}
+    @keyframes tvOff{
+      0%   {transform:scaleY(1); opacity:1;}
+      75%  {transform:scaleY(0.02); opacity:1; box-shadow:0 0 18px 6px rgba(255,255,255,.9) inset, 0 0 24px rgba(255,255,255,.9);}
+      100% {transform:scaleY(0); opacity:0;}
+    }
+
+    /* BIG spinning PNG bottom-right (500% bigger) */
+    .corner-spin{
+      position:fixed;right:10px;bottom:28px; /* above ticker */
+      width:130px;height:130px;
+      pointer-events:none;
+    }
+    .corner-spin img{
+      width:100%;height:100%;display:block;
+      transform-origin:50% 50%;
+      animation:spin 4s linear infinite;
+    }
+    @keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+    @media (max-width:480px){
+      .corner-spin{width:96px;height:96px;} /* scale down a bit on small phones */
+    }
+
+    /* single moving banner (visible immediately) */
+    .ticker{
+      position:fixed;bottom:0;left:0;width:100%;
+      height:22px;overflow:hidden;pointer-events:none;
+    }
+    .track{
+      position:absolute;left:0;white-space:nowrap;
+      color:#3d3d3d;font-size:clamp(9px,1.8vw,11px);line-height:22px;
+      animation:scroll 40s linear infinite;
+    }
+    @keyframes scroll{
+      0%{transform:translateX(100%);}
+      100%{transform:translateX(-100%);}
+    }
+
+    @media (max-width:380px){
+      .line{font-size:clamp(12px,4.2vw,18px)}
+      .ticker{height:20px}
+      .track{line-height:20px}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap" id="content">
+    <div class="line">
+      <span class="txt">make </span><span id="make" class="something" role="button" tabindex="0">something</span>
+    </div>
+    <div class="line">
+      <span class="txt">submit </span><span id="submit" class="something" role="button" tabindex="0">something</span>
+    </div>
+    <div class="line">
+      <span class="txt">win </span><span id="win" class="something" role="button" tabindex="0">something</span>
+    </div>
+  </div>
+
+  <!-- spinning corner image (bottom-right) -->
+  <div class="corner-spin" aria-hidden="true">
+    <img src="wine_spin.png" alt="">
+  </div>
+
+  <!-- single bottom moving text banner -->
+  <div class="ticker" aria-hidden="true">
+    <div class="track">
+      accepted files, mp3, mp4, png
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      welcome to the grotto
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      accepted files, mp3, mp4, png
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      welcome to the grotto
+    </div>
+  </div>
+
+  <div class="flash" id="flash"></div>
+  <div class="crt" id="crt"></div>
+
+  <script>
+    /* letter-by-letter scrambler */
+    class Scrambler {
+      constructor(el, charset='!<>-_\\/[]{}—=+*^?#abcdefghijklmnopqrstuvwxyz0123456789'){
+        this.el = el; this.charset = charset; this.frame = 0; this.req = null; this.queue = [];
+      }
+      to(text) {
+        const from = this.el.textContent;
+        const len = Math.max(from.length, text.length);
+        this.queue = [];
+        for (let i=0;i<len;i++){
+          const a = from[i] || '';
+          const b = text[i] || '';
+          const start = Math.floor(Math.random()*6);
+          const end   = start + 6 + Math.floor(Math.random()*6);
+          this.queue.push({a,b,start,end,ch:''});
+        }
+        cancelAnimationFrame(this.req); this.frame=0;
+        return new Promise(res=>{
+          const step = ()=>{
+            let out='', done=0;
+            for (let i=0;i<this.queue.length;i++){
+              let q=this.queue[i];
+              if (this.frame >= q.end){ done++; out += q.b; }
+              else if (this.frame >= q.start){
+                if (!q.ch || Math.random()<0.3){ q.ch = this.charset[Math.floor(Math.random()*this.charset.length)]; }
+                out += q.ch;
+              } else out += q.a;
+            }
+            this.el.textContent = out;
+            if (done === this.queue.length) res(); else { this.frame++; this.req=requestAnimationFrame(step); }
+          };
+          step();
+        });
+      }
+    }
+
+    /* quick noise glitch (scramble but don't converge) */
+    function glitchNoiseOnce(el, duration=420){
+      const base = el.textContent;
+      const chars='!<>-_\\/[]{}—=+*^?#abcdefghijklmnopqrstuvwxyz0123456789';
+      let t=0; const hop=30;
+      const tick=()=>{
+        let out='';
+        for (let i=0;i<base.length;i++){
+          out += Math.random()<0.55 ? chars[Math.floor(Math.random()*chars.length)] : base[i];
+        }
+        el.textContent = out;
+        t+=hop;
+        if (t<duration) setTimeout(tick, hop);
+        else el.textContent = base;
+      };
+      tick();
+    }
+
+    /* MAKE: toggle something <-> anything (glitching to the new word) */
+    (function(){
+      const el = document.getElementById('make');
+      const scr = new Scrambler(el);
+      let any=false;
+      const toggle=()=>{ any=!any; scr.to(any?'anything':'something'); };
+      el.addEventListener('click', toggle);
+      el.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle();} });
+    })();
+
+    /* SUBMIT: quick glitch before opening mailto draft */
+    (function(){
+      const el = document.getElementById('submit');
+      const go=()=>{
+        glitchNoiseOnce(el, 420);
+        setTimeout(()=>{
+          const email='bluetilespace@gmail.com';
+          const subject=encodeURIComponent('submission');
+          const body=encodeURIComponent('accepted file types: mp3, mp4, png');
+          window.location.href=`mailto:${email}?subject=${subject}&body=${body}`;
+        }, 440);
+      };
+      el.addEventListener('click', go);
+      el.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();go();} });
+    })();
+
+    /* WIN: individually glitch all text -> white flash -> analog TV off -> empty black page */
+    (function(){
+      const winWord = document.getElementById('win');
+      const flash = document.getElementById('flash');
+      const crt = document.getElementById('crt');
+      const content = document.getElementById('content');
+
+      function glitchAllIndividually(){
+        const lines = Array.from(content.querySelectorAll('.line'));
+        lines.forEach((line, idx)=>{
+          const spans = Array.from(line.querySelectorAll('.txt, .something'));
+          setTimeout(()=>{ spans.forEach(s => glitchNoiseOnce(s, 500)); }, idx * 120);
+        });
+      }
+
+      function sequence(){
+        glitchAllIndividually();
+
+        // white flash
+        setTimeout(()=>{
+          flash.classList.add('on');
+
+          // CRT collapse to black, then blank page
+          setTimeout(()=>{
+            flash.classList.remove('on');
+            crt.classList.add('on');
+            crt.addEventListener('animationend', ()=>{
+              document.body.style.background='#000';
+              document.body.innerHTML=''; // empty black page
+            }, { once:true });
+          }, 180);
+        }, 650);
+      }
+
+      winWord.addEventListener('click', sequence);
+      winWord.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();sequence();} });
+    })();
+  </script>
+</body>
+</html>
