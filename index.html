@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>WELCOME TO THE GROTTO — INDEX</title>
+  <title>guerrillagrotto.space</title>
   <style>
     :root {
       --bg: #000;
@@ -11,7 +11,8 @@
       --accent: #fff;
       --stroke-opacity: 0.65;
       --stroke-width: 2px; /* thinner stroke to match frame + plus signs */
-      --banner-height: 48px; /* taller for visibility */
+      --banner-height: 44px; /* bottom ticker height */
+      --circle: clamp(260px, 36vw, 560px); /* responsive circle size */
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     }
 
@@ -38,23 +39,27 @@
     /* Top auto-scrolling banner */
     .banner {
       position: fixed;
-      top: 12px; left: 12px; right: auto;
-      height: auto;
-      overflow: visible;
-      background: transparent; /* floating */
+      bottom: 0; left: 0; right: 0;
+      height: var(--banner-height);
+      overflow: hidden;
+      background: transparent; /* no band */
       z-index: 9999;
-      pointer-events: none; /* only inner gets events */
     }
 
-    .banner-inner {
-      display: inline-block;
-      padding: 4px 8px;
-      border: 1px solid color-mix(in oklab, var(--fg) 60%, transparent);
-      background: color-mix(in oklab, var(--bg) 75%, var(--fg) 25%);
+    .ticker {
+      position: absolute;
+      left: 0; top: 0; right: 0; bottom: 0;
       white-space: nowrap;
-      pointer-events: auto; /* allow hover/click */
-      animation: floatLoop 18s linear infinite;
+      line-height: var(--banner-height);
+      font-size: clamp(10px, 1.1vw, 14px);
+      letter-spacing: 0.08em;
+      color: var(--fg);
+      animation: marquee 22s linear infinite;
     }
+    @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    .chunk { margin-right: 5rem; }
+    .grotto-word { padding: 0 2px; transition: filter 120ms linear; }
+    .grotto-word:hover { filter: brightness(1.35); }
     @keyframes floatLoop { from { transform: translateX(0); } to { transform: translateX(-50%); } }
     .banner-text { font-size: 12px; letter-spacing: 0.08em; line-height: 1; color: var(--fg); }
     .banner-gap { margin-left: 3rem; }
@@ -81,11 +86,9 @@
     /* Layout */
     .stage {
       position: fixed;
-      top: var(--banner-height);
-      left: 0; right: 0; bottom: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      inset: 0 0 var(--banner-height) 0; /* leave space for bottom ticker */
+      display: grid;
+      place-items: center;
     }
 
     .frame {
@@ -110,7 +113,7 @@
       gap: min(6vw, 48px);
       padding: min(5vw, 40px);
     }
-    .circle-wrap { position: relative; width: 340px; height: 340px; display: grid; place-items: center; }
+    .circle-wrap { position: relative; width: var(--circle); height: var(--circle); display: grid; place-items: center; }
 
     svg {
       overflow: visible;
@@ -227,16 +230,28 @@
     }
     .glitch { text-shadow: 0 0 2px var(--fg); }
   </style>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none' stroke='%23000' stroke-width='4'><circle cx='32' cy='32' r='26'/><path d='M32 14v36M14 32h36'/></svg>'>
 </head>
 <body>
   <!-- Custom invert+ cursor -->
   <div class="cursor-plus" aria-hidden="true"></div>
 
   <!-- Auto-scrolling banner across top -->
-  <div class="banner" aria-label="welcome banner">
-    <div class="banner-inner">
-      <span class="banner-text">WELCOME TO THE <span class="grotto-word" id="grottoToggle" title="Click to glitch & invert">GROTTO</span><span class="banner-gap"></span>WELCOME TO THE <span class="grotto-word">GROTTO</span><span class="banner-gap"></span>WELCOME TO THE <span class="grotto-word">GROTTO</span><span class="banner-gap"></span>WELCOME TO THE <span class="grotto-word">GROTTO</span><span class="banner-gap"></span>WELCOME TO THE <span class="grotto-word">GROTTO</span><span class="banner-gap"></span>WELCOME TO THE <span class="grotto-word">GROTTO</span></span>
+  <div class="banner" aria-label="welcome ticker">
+    <div class="ticker">
+      <span class="chunk">WELCOME TO THE <span class="grotto-word" id="grottoToggle" title="Click to toggle GUERILLA">GROTTO</span></span>
+      <span class="chunk">WELCOME TO THE <span class="grotto-word">GROTTO</span></span>
+      <span class="chunk">WELCOME TO THE <span class="grotto-word">GROTTO</span></span>
+      <span class="chunk">WELCOME TO THE <span class="grotto-word">GROTTO</span></span>
+      <span class="chunk">WELCOME TO THE <span class="grotto-word">GROTTO</span></span>
+      <span class="chunk">WELCOME TO THE <span class="grotto-word">GROTTO</span></span>
+      <!-- duplicate for seamless loop -->
+      <span class="chunk">WELCOME TO THE <span class="grotto-word">GROTTO</span></span>
+      <span class="chunk">WELCOME TO THE <span class="grotto-word">GROTTO</span></span>
+      <span class="chunk">WELCOME TO THE <span class="grotto-word">GROTTO</span></span>
+      <span class="chunk">WELCOME TO THE <span class="grotto-word">GROTTO</span></span>
     </div>
+  </div>
   </div>
 
   <!-- Main stage -->
@@ -244,7 +259,7 @@
     <div class="frame" aria-label="two circles frame">
       <div class="circles">
         <div class="circle-wrap">
-          <svg width="340" height="340" viewBox="0 0 340 340" aria-hidden="true">
+          <svg width="100%" height="100%" viewBox="0 0 340 340" aria-hidden="true">
             <circle class="ring" cx="170" cy="170" r="150" stroke-width="var(--stroke-width)"></circle>
           </svg>
           <div id="crossLeft" class="cross in-circle draggable" aria-label="draggable cross" title="Drag this + to overlap the other one"></div>
@@ -273,13 +288,13 @@
   </main>
 
   <script>
-    // ===== Custom plus-sign cursor that inverts background via mix-blend-mode
+    // Custom plus-sign cursor
     const cursor = document.querySelector('.cursor-plus');
     document.addEventListener('pointermove', (e) => {
-      cursor.style.transform = `translate(${e.clientX - 12}px, ${e.clientY - 12}px)`; // center the 18x18 cursor
+      cursor.style.transform = `translate(${e.clientX - 12}px, ${e.clientY - 12}px)`;
     });
 
-    // ===== Toggle inverted theme when clicking the word “GROTTO” in the banner (first instance)
+    // Toggle GUERILLA + invert, and switch banner word text
     const toggleEl = document.getElementById('grottoToggle');
     function setGrottoWords(to){
       document.querySelectorAll('.grotto-word').forEach(el=>{ el.textContent = to; });
@@ -287,144 +302,69 @@
     toggleEl.addEventListener('click', () => {
       const g = document.body.classList.toggle('guerilla');
       document.body.classList.toggle('inverted');
-      // fun little glitch effect
-      document.querySelectorAll('.grotto-word').forEach(el=>{
-        el.classList.add('glitch');
-        setTimeout(()=>el.classList.remove('glitch'), 250);
-      });
       setGrottoWords(g ? 'GUERILLA' : 'GROTTO');
-    }););
+    });
 
-    // ===== Make the right cross draggable, detect overlap with left cross
+    // Cross logic: drag LEFT to RIGHT only (in GUERILLA mode)
     const crossLeft  = document.getElementById('crossLeft');
     const crossRight = document.getElementById('crossRight');
 
-    // place rays to extend from the right cross center
+    function centerOf(el){ const r = el.getBoundingClientRect(); return { x: r.left + r.width/2, y: r.top + r.height/2 }; }
+    function distance(a,b){ const dx=a.x-b.x, dy=a.y-b.y; return Math.hypot(dx,dy); }
+
+    // Rays from the right cross, extend on load
     function placeRays(){
-      const center = centerOf(crossRight);
-      document.querySelectorAll('#crossRight .ray').forEach(ray=>{
-        ray.style.left = center.x + 'px';
-        ray.style.top  = center.y + 'px';
-      });
-      // trigger animations on load
+      const c = centerOf(crossRight);
+      document.querySelectorAll('#crossRight .ray').forEach(ray=>{ ray.style.left = c.x+'px'; ray.style.top = c.y+'px'; });
       const rh = crossRight.querySelector('.ray.h');
       const rv = crossRight.querySelector('.ray.v');
       const rd = crossRight.querySelector('.ray.d');
-      if(rh){ rh.style.animation = 'growW 1.2s ease-out forwards'; }
-      if(rv){ rv.style.animation = 'growH 1.2s ease-out forwards'; }
-      if(rd){ rd.style.animation = 'growW 1.2s ease-out forwards'; }
+      if(rh) rh.style.animation = 'growW 1.2s ease-out forwards';
+      if(rv) rv.style.animation = 'growH 1.2s ease-out forwards';
+      if(rd) rd.style.animation = 'growW 1.2s ease-out forwards';
     }
     window.addEventListener('load', placeRays);
     window.addEventListener('resize', placeRays);
 
-    let isDragging = false;
-    let dragOffsetX = 0, dragOffsetY = 0;
-
-    const onDown = (e) => {
-      if(!document.body.classList.contains('guerilla')) return; // only draggable in guerilla mode
+    let isDragging = false; let offX=0, offY=0;
+    function onDown(e){
+      if(!document.body.classList.contains('guerilla')) return; // draggable only in GUERILLA
       isDragging = true;
-      const rect = crossLeft.getBoundingClientRect();
-      const startX = (e.touches ? e.touches[0].clientX : e.clientX);
-      const startY = (e.touches ? e.touches[0].clientY : e.clientY);
-      dragOffsetX = startX - rect.left;
-      dragOffsetY = startY - rect.top;
-    };
-
-    const onMove = (e) => {
+      const r = crossLeft.getBoundingClientRect();
+      const sx = e.touches ? e.touches[0].clientX : e.clientX;
+      const sy = e.touches ? e.touches[0].clientY : e.clientY;
+      offX = sx - r.left; offY = sy - r.top;
+    }
+    function onMove(e){
       if(!isDragging) return;
-      const x = (e.touches ? e.touches[0].clientX : e.clientX) - dragOffsetX;
-      const y = (e.touches ? e.touches[0].clientY : e.clientY) - dragOffsetY;
-      crossLeft.style.left = `${x}px`;
-      crossLeft.style.top  = `${y}px`;
+      const x = (e.touches ? e.touches[0].clientX : e.clientX) - offX;
+      const y = (e.touches ? e.touches[0].clientY : e.clientY) - offY;
+      crossLeft.style.left = x + 'px';
+      crossLeft.style.top  = y + 'px';
       checkOverlap();
-    };
-
-    const onUp = () => { isDragging = false; };
+    }
+    function onUp(){ isDragging = false; }
 
     crossLeft.addEventListener('pointerdown', onDown);
     document.addEventListener('pointermove', onMove);
     document.addEventListener('pointerup', onUp);
-    // Touch support
     crossLeft.addEventListener('touchstart', onDown, {passive:true});
     document.addEventListener('touchmove', onMove, {passive:false});
     document.addEventListener('touchend', onUp);
 
-    function centerOf(el){
-      const r = el.getBoundingClientRect();
-      return { x: r.left + r.width/2, y: r.top + r.height/2 };
-    }
-
-    function distance(a,b){
-      const dx = a.x - b.x, dy = a.y - b.y; return Math.hypot(dx,dy);
-    }
-
     function checkOverlap(){
-      const a = centerOf(crossRight);
-      const b = centerOf(crossLeft);
-      const d = distance(a,b);
-      const threshold = 12; // increased for bigger pluses
-      const overlapped = d <= threshold;
+      const a = centerOf(crossRight); const b = centerOf(crossLeft);
+      const d = distance(a,b); const overlapped = d <= 12;
       crossLeft.classList.toggle('red', overlapped);
       crossRight.classList.toggle('red', overlapped);
       crossLeft.dataset.overlapped = overlapped ? '1' : '0';
     }
 
-    // If overlapped and clicked (on left), go to a secret page — only in guerilla mode
     crossLeft.addEventListener('click', () => {
-      if(document.body.classList.contains('guerilla') && crossLeft.dataset.overlapped === '1') {
-        window.location.href = 'secret.html';
-      }
+      if(document.body.classList.contains('guerilla') && crossLeft.dataset.overlapped === '1') window.location.href = 'secret.html';
     });
 
-    // Initial check & ray placement
     checkOverlap();
-    placeRays();
-    };
-
-    const onUp = () => { isDragging = false; };
-
-    crossRight.addEventListener('pointerdown', onDown);
-    document.addEventListener('pointermove', onMove);
-    document.addEventListener('pointerup', onUp);
-    // Touch support
-    crossRight.addEventListener('touchstart', onDown, {passive:true});
-    document.addEventListener('touchmove', onMove, {passive:false});
-    document.addEventListener('touchend', onUp);
-
-    function centerOf(el){
-      const r = el.getBoundingClientRect();
-      return { x: r.left + r.width/2, y: r.top + r.height/2 };
-    }
-
-    function distance(a,b){
-      const dx = a.x - b.x, dy = a.y - b.y; return Math.hypot(dx,dy);
-    }
-
-    function checkOverlap(){
-      const a = centerOf(crossLeft);
-      const b = centerOf(crossRight);
-      const d = distance(a,b);
-      const threshold = 8; // within 8px counts as "perfectly overlapped"
-      const overlapped = d <= threshold;
-      crossLeft.classList.toggle('red', overlapped);
-      crossRight.classList.toggle('red', overlapped);
-      crossRight.dataset.overlapped = overlapped ? '1' : '0';
-    }
-
-    // If overlapped and clicked, go to a secret page
-    crossRight.addEventListener('click', () => {
-      if(crossRight.dataset.overlapped === '1') {
-        window.location.href = 'secret.html';
-      }
-    });
-
-    // Initial check
-    checkOverlap();
-
-    // ===== Accessibility: pause banner on hover (optional but nice) =====
-    const bannerTrack = document.getElementById('bannerTrack');
-    bannerTrack.addEventListener('mouseenter', () => { bannerTrack.style.animationPlayState = 'paused'; });
-    bannerTrack.addEventListener('mouseleave', () => { bannerTrack.style.animationPlayState = 'running'; });
   </script>
 </body>
 </html>
