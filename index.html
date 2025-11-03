@@ -15,12 +15,13 @@
       --bg: #000;          /* base background */
       --fg: #fff;          /* base foreground (text + lines) */
       --muted: #999;
-      --stroke: 2.2px;     /* global stroke width */
+      --stroke: 1px;       /* global stroke width (updated) */
       --cursor-stroke: 1.6px; /* custom cursor stroke */
       --plus-size: 16px;       /* custom cursor plus arm length */
       --ui-scale: 78vmin;  /* size of the main framed SVG */
-      --marquee-gap: 6ch;  /* spacing between repeated phrases (V9 ~3x more) */
+      --phrase-gap: 12ch;  /* large spacing between repeated phrases */
       --hover-delta: 18%;  /* how much lighter/darker on hover */
+      --text-size: 12px;   /* unified size for banner + interior text */
     }
 
     /* Inverted ("Guerrilla") mode */
@@ -37,55 +38,41 @@
       background:var(--bg);
       color:var(--fg);
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      cursor: none; /* no stock cursor (V4/V6) */
+      cursor: none; /* no stock cursor */
       overflow:hidden; /* keep the layout tight */
     }
 
-    /* ==== Floating bottom marquee (V8/V9) ==== */
+    /* ==== Floating bottom marquee ==== */
     .marquee-wrap{
       position: fixed;
-      left: 0; right: 0; bottom: 0; /* bottom of screen per V8 */
+      left: 0; right: 0; bottom: 0; /* bottom of screen */
       pointer-events: none; /* default: no hover except specific words */
       user-select: none;
-      filter: none;
       padding-bottom: 8px; /* float slightly above bottom edge */
     }
     .marquee{ 
       display: flex; 
       white-space: nowrap; 
-      gap: var(--marquee-gap);
+      gap: var(--phrase-gap); /* large gap between phrases */
       will-change: transform;
       animation: scroll 18s linear infinite;
-      font-size: 12px; /* small simple text */
+      font-size: var(--text-size);
       letter-spacing: 0.02em;
     }
     @keyframes scroll{ from{transform: translateX(0);} to{transform: translateX(-50%);} }
 
-    .marquee .chunk{ display:flex; gap: var(--marquee-gap); }
-
-    .marquee .grotto{ 
-      pointer-events: auto; /* the only interactive bit */
-      transition: filter .15s ease;
-    }
+    .marquee .chunk{ display:flex; gap: var(--phrase-gap); }
+    .phrase{ pointer-events:none; }
+    .phrase .grotto{ pointer-events:auto; transition: filter .15s ease; }
     .marquee.paused{ animation-play-state: paused; }
 
-    /* Hover affordance: slightly darker or lighter for visibility */
+    /* Hover affordance: slightly darker or lighter */
     .hover-affordance{ filter: brightness(calc(100% - var(--hover-delta))); }
     body.inverted .hover-affordance{ filter: brightness(calc(100% + var(--hover-delta))); }
 
-    /* Glitch animation preparation */
-    .glitching{ position: relative; }
-
     /* ==== Centered framed composition (SVG scales evenly) ==== */
-    .stage{
-      position: absolute; inset: 0; display: grid; place-items: center;
-    }
-    .frame{
-      width: min(var(--ui-scale), 92vw); height: auto;
-      max-height: 72vh;
-      aspect-ratio: 4 / 3; /* framed canvas proportion for rectangle + circles */
-      display: block;
-    }
+    .stage{ position: absolute; inset: 0; display: grid; place-items: center; }
+    .frame{ width: min(var(--ui-scale), 92vw); height: auto; max-height: 72vh; aspect-ratio: 4 / 3; display: block; }
 
     /* Rotating text inside right circle */
     .rotateCCW{ animation: rotateCCW 16s linear infinite; transform-origin: 50% 50%; }
@@ -95,21 +82,9 @@
     .plus-hit.ok{ color: #d00; }
 
     /* ====== Custom PLUS cursor (mix-blend-difference to invert underlay) ====== */
-    .cursor-plus{
-      position: fixed; left:0; top:0; width:0; height:0; z-index: 1000;
-      pointer-events: none; mix-blend-mode: difference; /* invert whatever is under */
-    }
-    .cursor-plus::before, .cursor-plus::after{
-      content:""; position:absolute; left:0; top:0; 
-      border: var(--cursor-stroke) solid var(--fg);
-      width: calc(var(--plus-size)*2); height: 0; transform: translate(-50%, -50%);
-    }
-    .cursor-plus::after{
-      width:0; height: calc(var(--plus-size)*2);
-    }
-
-    /* Utility */
-    .visually-hidden{ position:absolute !important; clip: rect(1px, 1px, 1px, 1px); padding:0 !important; border:0 !important; height:1px !important; width:1px !important; overflow:hidden; }
+    .cursor-plus{ position: fixed; left:0; top:0; width:0; height:0; z-index: 1000; pointer-events: none; mix-blend-mode: difference; }
+    .cursor-plus::before, .cursor-plus::after{ content:""; position:absolute; left:0; top:0; border: var(--cursor-stroke) solid var(--fg); width: calc(var(--plus-size)*2); height: 0; transform: translate(-50%, -50%); }
+    .cursor-plus::after{ width:0; height: calc(var(--plus-size)*2); }
   </style>
 </head>
 <body>
@@ -123,36 +98,36 @@
 
       <!-- Shared paint -->
       <defs>
-        <!-- text-on-a-circle path (slightly inset so it doesn't touch the line, per V4) -->
-        <path id="ringPath" d="M 560,300 m -120,0 a 120,120 0 1,1 240,0 a 120,120 0 1,1 -240,0" />
+        <!-- text-on-a-circle path (slightly inset so it doesn't touch the line) -->
+        <path id="ringPath" d="M 533.33,300 m -110,0 a 110,110 0 1,1 220,0 a 110,110 0 1,1 -220,0" />
       </defs>
 
-      <!-- Frame rectangle (thin stroke; matches circles and pluses per V2) -->
-      <g id="composition" stroke="currentColor" fill="none" stroke-width="2.2">
+      <!-- Frame rectangle (stroke matches circles and pluses) -->
+      <g id="composition" stroke="currentColor" fill="none" stroke-width="1">
         <rect id="frameRect" x="120" y="120" width="560" height="360" rx="2"/>
 
-        <!-- Circles (same size, centered within rectangle horizontally) -->
-        <circle id="leftCircle" cx="320" cy="300" r="120" />
-        <circle id="rightCircle" cx="560" cy="300" r="120" />
+        <!-- Circles (same size, centered vertically, evenly spaced horizontally) -->
+        <circle id="leftCircle" cx="266.67" cy="300" r="120" />
+        <circle id="rightCircle" cx="533.33" cy="300" r="120" />
 
-        <!-- Rotating issue text inside right circle, counterclockwise (V1 & V7 update) -->
+        <!-- Rotating issue text inside right circle, counterclockwise; size = banner size -->
         <g class="rotateCCW">
-          <text id="issue" fill="currentColor" font-size="16" letter-spacing="0.08em">
+          <text id="issue" fill="currentColor" style="font-size: var(--text-size);" letter-spacing="0.08em">
             <textPath href="#ringPath" startOffset="0%">ISSUE 001 — 12/12</textPath>
           </text>
         </g>
 
-        <!-- Plus signs INSIDE circles (thin stroke; V2). Slightly towards center but still lower-right quadrant (V4). -->
+        <!-- Larger plus signs INSIDE circles (same thin stroke). Slightly toward center, still lower-right quadrant. -->
         <!-- RIGHT (static) target -->
-        <g id="rightPlus" class="plus-hit" transform="translate(600, 340)">
-          <line x1="-14" y1="0" x2="14" y2="0" />
-          <line x1="0" y1="-14" x2="0" y2="14" />
+        <g id="rightPlus" class="plus-hit" transform="translate(573.33, 340)">
+          <line x1="-24" y1="0" x2="24" y2="0" />
+          <line x1="0" y1="-24" x2="0" y2="24" />
         </g>
 
         <!-- LEFT (draggable) target -->
-        <g id="leftPlus" class="plus-hit" transform="translate(360, 340)">
-          <line x1="-14" y1="0" x2="14" y2="0" />
-          <line x1="0" y1="-14" x2="0" y2="14" />
+        <g id="leftPlus" class="plus-hit" transform="translate(306.67, 340)">
+          <line x1="-24" y1="0" x2="24" y2="0" />
+          <line x1="0" y1="-24" x2="0" y2="24" />
         </g>
       </g>
     </svg>
@@ -176,15 +151,16 @@
     const marquee = document.getElementById('marquee');
 
     function buildMarquee(){
-      const phrase = ["welcome", "to", "the", "grotto"]; // small + simple
       const one = document.createElement('div'); one.className = 'chunk';
       for (let i=0;i<30;i++) { // enough to overflow for seamless loop
-        for (let w of phrase){
-          const span = document.createElement('span');
-          span.textContent = w;
-          if (w === 'grotto') span.className = 'grotto';
-          one.appendChild(span);
-        }
+        const phrase = document.createElement('span');
+        phrase.className = 'phrase';
+        phrase.appendChild(document.createTextNode('Welcome to the '));
+        const grot = document.createElement('span');
+        grot.textContent = 'grotto';
+        grot.className = 'grotto';
+        phrase.appendChild(grot);
+        one.appendChild(phrase);
       }
       const two = one.cloneNode(true);
       marquee.appendChild(one);
@@ -192,7 +168,7 @@
     }
     buildMarquee();
 
-    // Hover on the word "grotto" should pause the loop and show hover affordance.
+    // Hover on the word "grotto" pauses loop and shows affordance
     marquee.addEventListener('mouseover', (e)=>{
       if(e.target.classList.contains('grotto')){
         marquee.classList.add('paused');
@@ -209,7 +185,7 @@
     /* ================= Mode toggle via clicking any "grotto" word ================= */
     let guerrillaMode = false; // drag only allowed in this mode
     function randomChar(){
-      const chars = '!<>-_\/[]{}—=+*^?#________';
+      const chars = '!<>-_\\/[]{}—=+*^?#________';
       return chars[Math.floor(Math.random()*chars.length)];
     }
     function glitchSwap(node, toText){
@@ -275,17 +251,14 @@
     window.addEventListener('mousemove', onDrag);
     window.addEventListener('touchmove', onDrag, {passive:false});
 
-    function centerOf(g){
-      const m = g.getCTM();
-      return { x: m.e, y: m.f };
-    }
+    function centerOf(g){ const m = g.getCTM(); return { x: m.e, y: m.f }; }
     function distance(a,b){ const dx=a.x-b.x, dy=a.y-b.y; return Math.hypot(dx,dy); }
 
     let overlapReady = false;
     function checkOverlap(){
       const a = centerOf(leftPlus), b = centerOf(rightPlus);
       const d = distance(a,b);
-      const threshold = 14; // within radius of the small plus shape
+      const threshold = 24; // match larger plus size arms
       const ok = d < threshold;
       overlapReady = ok;
       leftPlus.classList.toggle('ok', ok);
@@ -293,24 +266,11 @@
     }
 
     svg.addEventListener('click', (e)=>{
-      if(overlapReady){
-        // Clicking when overlapped -> go to the secret page
-        window.location.href = 'secret.html';
-      }
+      if(overlapReady){ window.location.href = 'secret.html'; }
     });
 
     /* ================= Accessibility: keyboard fallback ================= */
-    document.addEventListener('keydown', (e)=>{
-      if(e.key.toLowerCase()==='g'){ toggleMode(); }
-    });
-
-    /* ================= Ensure everything scales together ================= */
-    function fitUI(){
-      // keep the SVG within viewport; strokes scale with the viewBox naturally
-      // (frame already centered by grid)
-    }
-    window.addEventListener('resize', fitUI);
-    fitUI();
+    document.addEventListener('keydown', (e)=>{ if(e.key.toLowerCase()==='g'){ toggleMode(); } });
   </script>
 </body>
 </html>
