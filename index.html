@@ -10,8 +10,7 @@
       --fg: #fff;
       --accent: #fff;
       --stroke-opacity: 0.65;
-      --stroke-width: 10px; /* thick strokes for the circles */
-      --banner-height: 34px; /* small, simple banner */
+      --stroke-width: 2px; /* thinner stroke to match frame + plus signs */ /* small, simple banner */
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     }
 
@@ -71,9 +70,7 @@
     }
 
     /* Hovering just the word “grotto” inverts it */
-    .banner .grotto-word:hover {
-      filter: invert(1);
-    }
+    .banner .grotto-word:hover { background: var(--fg); color: var(--bg); filter: none; }
 
     /* Clicking the word toggles theme via JS */
 
@@ -89,7 +86,7 @@
       position: relative;
       width: min(92vw, 1200px);
       height: min(70vh, 680px);
-      border: 1px solid color-mix(in oklab, var(--fg) 55%, transparent);
+      border: 2px solid color-mix(in oklab, var(--fg) 55%, transparent);
       box-sizing: border-box;
     }
 
@@ -127,7 +124,7 @@
       animation: spin-ccw 14s linear infinite;
     }
 
-    .orbit-wrap:hover .orbit-text { filter: invert(1); }
+    .orbit-wrap:hover .orbit-text { filter: none; fill: var(--bg); stroke: var(--fg); stroke-width: 3px; paint-order: stroke fill; }
 
     @keyframes spin-ccw {
       from { transform: rotate(0deg); }
@@ -167,19 +164,19 @@
 
     /* positions (tuned for the default SVG size below) */
     .cross.left {
-      /* anchored relative to left circle */
-      /* approx bottom-right quadrant */
-      --offsetX: 22%;
-      --offsetY: 22%;
+      /* place inside the left circle, bottom-right quadrant */
+      --offsetX: 8%;
+      --offsetY: 8%;
       left: calc(25% + var(--offsetX));
-      top: calc(60% + var(--offsetY));
+      top: calc(56% + var(--offsetY));
     }
 
     .cross.right {
-      --offsetX: 22%;
-      --offsetY: 22%;
+      /* place inside the right circle, bottom-right quadrant */
+      --offsetX: 8%;
+      --offsetY: 8%;
       left: calc(75% + var(--offsetX));
-      top: calc(60% + var(--offsetY));
+      top: calc(56% + var(--offsetY));
     }
 
     /* Draggable styles */
