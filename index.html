@@ -194,12 +194,12 @@
     .in-circle { bottom: 18%; right: 18%; }
 
     /* Rays from the right cross */
-    .ray { position: fixed; background: var(--fg); opacity: var(--stroke-opacity); transform-origin: left center; z-index: 1; }
+    /* removed rays for right cross */
     .ray.h { height: 2px; width: 0; }
     .ray.v { width: 2px; height: 0; }
     .ray.d { height: 2px; width: 0; transform: rotate(45deg); }
-    @keyframes growW { from { width: 0; } to { width: 200vmax; } }
-    @keyframes growH { from { height: 0; } to { height: 200vmax; } }
+    /* removed keyframes growW */ to { width: 200vmax; } }
+    /* removed keyframes growH */ to { height: 200vmax; } }
 
     /* Custom plus-sign cursor that inverts underlying content */
     .cursor-plus {
@@ -277,8 +277,7 @@
               </text>
             </g>
           </svg>
-          <div id="crossRight" class="cross in-circle" aria-label="static cross">
-            <div class="ray h"></div>
+          <div id="crossRight" class="cross in-circle" aria-label="static cross"></div>
             <div class="ray v"></div>
             <div class="ray d"></div>
           </div>
@@ -296,52 +295,69 @@
 
     // Toggle GUERILLA + invert, and switch banner word text
     const toggleEl = document.getElementById('grottoToggle');
-    function setGrottoWords(to){
-      document.querySelectorAll('.grotto-word').forEach(el=>{ el.textContent = to; });
+    const ticker = document.querySelector('.ticker');
+    function setWords(to){ document.querySelectorAll('.grotto-word').forEach(el=> el.textContent = to); }
+
+    // Pause ticker when hovering any GROTTO/GUERILLA word
+    function bindHoverPause(){
+      document.querySelectorAll('.grotto-word').forEach(el=>{
+        el.addEventListener('mouseenter', ()=>{ if(ticker) ticker.style.animationPlayState = 'paused'; });
+        el.addEventListener('mouseleave', ()=>{ if(ticker) ticker.style.animationPlayState = 'running'; });
+      });
     }
+    bindHoverPause();
+
+    // Letter-by-letter glitch swap
+    function glitchSwap(from, to, done){
+      const els = Array.from(document.querySelectorAll('.grotto-word'));
+      const maxLen = Math.max(from.length, to.length);
+      const chars = '!@#$%^&*()+{}[]<>?/\|~';
+      let i = 0;
+      const step = () => {
+        els.forEach(el=>{
+          const fixed = to.slice(0, i);
+          let rest = '';
+          for(let j=i;j<maxLen;j++){ rest += chars[Math.floor(Math.random()*chars.length)]; }
+          el.textContent = (fixed + rest).slice(0, to.length);
+        });
+        i++;
+        if(i<=maxLen){ requestAnimationFrame(step); }
+        else { els.forEach(el=> el.textContent = to); if(done) done(); }
+      };
+      step();
+    }
+
     toggleEl.addEventListener('click', () => {
-      const g = document.body.classList.toggle('guerilla');
-      document.body.classList.toggle('inverted');
-      setGrottoWords(g ? 'GUERILLA' : 'GROTTO');
+      const toG = !document.body.classList.contains('guerilla');
+      document.body.classList.toggle('guerilla', toG);
+      document.body.classList.toggle('inverted', toG);
+      glitchSwap(toG ? 'GROTTO' : 'GUERILLA', toG ? 'GUERILLA' : 'GROTTO');
     });
 
-    // Cross logic: drag LEFT to RIGHT only (in GUERILLA mode)
+    // Cross logic remains
     const crossLeft  = document.getElementById('crossLeft');
     const crossRight = document.getElementById('crossRight');
 
     function centerOf(el){ const r = el.getBoundingClientRect(); return { x: r.left + r.width/2, y: r.top + r.height/2 }; }
     function distance(a,b){ const dx=a.x-b.x, dy=a.y-b.y; return Math.hypot(dx,dy); }
 
-    // Rays from the right cross, extend on load
-    function placeRays(){
-      const c = centerOf(crossRight);
-      document.querySelectorAll('#crossRight .ray').forEach(ray=>{ ray.style.left = c.x+'px'; ray.style.top = c.y+'px'; });
-      const rh = crossRight.querySelector('.ray.h');
-      const rv = crossRight.querySelector('.ray.v');
-      const rd = crossRight.querySelector('.ray.d');
-      if(rh) rh.style.animation = 'growW 1.2s ease-out forwards';
-      if(rv) rv.style.animation = 'growH 1.2s ease-out forwards';
-      if(rd) rd.style.animation = 'growW 1.2s ease-out forwards';
-    }
-    window.addEventListener('load', placeRays);
-    window.addEventListener('resize', placeRays);
-
     let isDragging = false; let offX=0, offY=0;
-    function onDown(e){
-      if(!document.body.classList.contains('guerilla')) return; // draggable only in GUERILLA
-      isDragging = true;
-      const r = crossLeft.getBoundingClientRect();
-      const sx = e.touches ? e.touches[0].clientX : e.clientX;
-      const sy = e.touches ? e.touches[0].clientY : e.clientY;
-      offX = sx - r.left; offY = sy - r.top;
-    }
-    function onMove(e){
-      if(!isDragging) return;
-      const x = (e.touches ? e.touches[0].clientX : e.clientX) - offX;
-      const y = (e.touches ? e.touches[0].clientY : e.clientY) - offY;
-      crossLeft.style.left = x + 'px';
-      crossLeft.style.top  = y + 'px';
-      checkOverlap();
+    function onDown(e){ if(!document.body.classList.contains('guerilla')) return; isDragging = true; const r = crossLeft.getBoundingClientRect(); const sx = e.touches ? e.touches[0].clientX : e.clientX; const sy = e.touches ? e.touches[0].clientY : e.clientY; offX = sx - r.left; offY = sy - r.top; }
+    function onMove(e){ if(!isDragging) return; const x = (e.touches ? e.touches[0].clientX : e.clientX) - offX; const y = (e.touches ? e.touches[0].clientY : e.clientY) - offY; crossLeft.style.left = x + 'px'; crossLeft.style.top  = y + 'px'; checkOverlap(); }
+    function onUp(){ isDragging = false; }
+
+    crossLeft.addEventListener('pointerdown', onDown);
+    document.addEventListener('pointermove', onMove);
+    document.addEventListener('pointerup', onUp);
+    crossLeft.addEventListener('touchstart', onDown, {passive:true});
+    document.addEventListener('touchmove', onMove, {passive:false});
+    document.addEventListener('touchend', onUp);
+
+    function checkOverlap(){ const a = centerOf(crossRight); const b = centerOf(crossLeft); const d = distance(a,b); const overlapped = d <= 12; crossLeft.classList.toggle('red', overlapped); crossRight.classList.toggle('red', overlapped); crossLeft.dataset.overlapped = overlapped ? '1' : '0'; }
+
+    crossLeft.addEventListener('click', () => { if(document.body.classList.contains('guerilla') && crossLeft.dataset.overlapped === '1') window.location.href = 'secret.html'; });
+
+    checkOverlap();
     }
     function onUp(){ isDragging = false; }
 
