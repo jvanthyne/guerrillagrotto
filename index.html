@@ -48,14 +48,22 @@
 
     .banner-track {
       position: absolute;
+      left: 0;
+      top: 0;
       white-space: nowrap;
       will-change: transform;
-      animation: marquee 22s linear infinite;
-      font-size: 12px; /* simple & small */
+      font-size: 12px;
       letter-spacing: 0.08em;
       line-height: var(--banner-height);
       color: var(--fg);
     }
+    .banner-track.t1 { animation: marquee 18s linear infinite; }
+    .banner-track.t2 { animation: marquee2 18s linear infinite; }
+
+    @keyframes marquee { from { transform: translateX(0%); } to { transform: translateX(-100%); } }
+    @keyframes marquee2 { from { transform: translateX(100%); } to { transform: translateX(0%); } }
+
+    .banner-chunk { margin-right: 4.5rem; }
     .banner-chunk { margin-right: 3.5rem; }
 
     @keyframes marquee {
@@ -76,18 +84,23 @@
 
     /* Layout */
     .stage {
-      position: absolute;
-      inset: var(--banner-height) 0 0 0; /* sit below banner */
-      display: grid;
-      place-items: center;
+      position: fixed;
+      top: var(--banner-height);
+      left: 0; right: 0; bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .frame {
       position: relative;
       width: min(92vw, 1200px);
       height: min(70vh, 680px);
+      margin: 0 auto;
       border: 2px solid color-mix(in oklab, var(--fg) 55%, transparent);
       box-sizing: border-box;
+      display: grid;
+      place-items: center;
     }
 
     /* Two circles wrapped in a flex row */
@@ -210,14 +223,17 @@
 
   <!-- Auto-scrolling banner across top -->
   <div class="banner" aria-label="welcome banner">
-    <div id="bannerTrack" class="banner-track">
+    <div class="banner-track t1" aria-hidden="true">
       <span class="banner-chunk">WELCOME TO THE <span class="grotto-word" id="grottoToggle" title="Click to invert the page">GROTTO</span></span>
       <span class="banner-chunk">WELCOME TO THE <span class="grotto-word">GROTTO</span></span>
       <span class="banner-chunk">WELCOME TO THE <span class="grotto-word">GROTTO</span></span>
       <span class="banner-chunk">WELCOME TO THE <span class="grotto-word">GROTTO</span></span>
       <span class="banner-chunk">WELCOME TO THE <span class="grotto-word">GROTTO</span></span>
       <span class="banner-chunk">WELCOME TO THE <span class="grotto-word">GROTTO</span></span>
-      <!-- Duplicate to allow seamless scroll -->
+    </div>
+    <div class="banner-track t2">
+      <span class="banner-chunk">WELCOME TO THE <span class="grotto-word">GROTTO</span></span>
+      <span class="banner-chunk">WELCOME TO THE <span class="grotto-word">GROTTO</span></span>
       <span class="banner-chunk">WELCOME TO THE <span class="grotto-word">GROTTO</span></span>
       <span class="banner-chunk">WELCOME TO THE <span class="grotto-word">GROTTO</span></span>
       <span class="banner-chunk">WELCOME TO THE <span class="grotto-word">GROTTO</span></span>
