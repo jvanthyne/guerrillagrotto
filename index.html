@@ -1,313 +1,316 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>guerrillagrotto.space</title>
-  <link rel="icon" type="image/svg+xml"
-    href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none' stroke='%23000' stroke-width='4'><circle cx='32' cy='32' r='26'/><path d='M32 14v36M14 32h36'/></svg>'">
+  <!-- Favicon: empty circle with a plus inside -->
+  <link rel="icon" type="image/svg+xml" href='data:image/svg+xml;utf8,
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+      <circle cx="32" cy="32" r="27" fill="none" stroke="black" stroke-width="4"/>
+      <path d="M32 16v32M16 32h32" stroke="black" stroke-width="4" fill="none" stroke-linecap="square"/>
+    </svg>' />
   <style>
-    :root {
-      --bg: #000;
-      --fg: #fff;
-      --stroke-opacity: 0.65;
-      --stroke-width: 2px;
-      --banner-height: 44px;
-      --circle: clamp(260px, 36vw, 560px);
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    :root{
+      --bg: #000;          /* base background */
+      --fg: #fff;          /* base foreground (text + lines) */
+      --muted: #999;
+      --stroke: 2.2px;     /* global stroke width */
+      --cursor-stroke: 1.6px; /* custom cursor stroke */
+      --plus-size: 16px;       /* custom cursor plus arm length */
+      --ui-scale: 78vmin;  /* size of the main framed SVG */
+      --marquee-gap: 6ch;  /* spacing between repeated phrases (V9 ~3x more) */
+      --hover-delta: 18%;  /* how much lighter/darker on hover */
     }
 
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--fg);
-      font-family: var(--mono);
-      overflow: hidden;
-      transition: background 0.4s, color 0.4s;
+    /* Inverted ("Guerrilla") mode */
+    body.inverted{
+      --bg:#fff;
+      --fg:#000;
     }
 
-    body.inverted {
-      background: #fff;
-      color: #000;
+    /* Base reset */
+    html,body{height:100%;}
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--fg);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      cursor: none; /* no stock cursor (V4/V6) */
+      overflow:hidden; /* keep the layout tight */
     }
 
-    .stage {
+    /* ==== Floating bottom marquee (V8/V9) ==== */
+    .marquee-wrap{
       position: fixed;
-      inset: 0 0 var(--banner-height) 0;
-      display: grid;
-      place-items: center;
+      left: 0; right: 0; bottom: 0; /* bottom of screen per V8 */
+      pointer-events: none; /* default: no hover except specific words */
+      user-select: none;
+      filter: none;
+      padding-bottom: 8px; /* float slightly above bottom edge */
+    }
+    .marquee{ 
+      display: flex; 
+      white-space: nowrap; 
+      gap: var(--marquee-gap);
+      will-change: transform;
+      animation: scroll 18s linear infinite;
+      font-size: 12px; /* small simple text */
+      letter-spacing: 0.02em;
+    }
+    @keyframes scroll{ from{transform: translateX(0);} to{transform: translateX(-50%);} }
+
+    .marquee .chunk{ display:flex; gap: var(--marquee-gap); }
+
+    .marquee .grotto{ 
+      pointer-events: auto; /* the only interactive bit */
+      transition: filter .15s ease;
+    }
+    .marquee.paused{ animation-play-state: paused; }
+
+    /* Hover affordance: slightly darker or lighter for visibility */
+    .hover-affordance{ filter: brightness(calc(100% - var(--hover-delta))); }
+    body.inverted .hover-affordance{ filter: brightness(calc(100% + var(--hover-delta))); }
+
+    /* Glitch animation preparation */
+    .glitching{ position: relative; }
+
+    /* ==== Centered framed composition (SVG scales evenly) ==== */
+    .stage{
+      position: absolute; inset: 0; display: grid; place-items: center;
+    }
+    .frame{
+      width: min(var(--ui-scale), 92vw); height: auto;
+      max-height: 72vh;
+      aspect-ratio: 4 / 3; /* framed canvas proportion for rectangle + circles */
+      display: block;
     }
 
-    .frame {
-      position: relative;
-      display: grid;
-      place-items: center;
-      border: var(--stroke-width) solid var(--fg);
-      width: min(80vw, 600px);
-      aspect-ratio: 1 / 1;
-      transition: all 0.4s;
+    /* Rotating text inside right circle */
+    .rotateCCW{ animation: rotateCCW 16s linear infinite; transform-origin: 50% 50%; }
+    @keyframes rotateCCW{ from{ transform: rotate(0deg);} to{ transform: rotate(-360deg);} }
+
+    /* Plus targets turn red when overlapped */
+    .plus-hit.ok{ color: #d00; }
+
+    /* ====== Custom PLUS cursor (mix-blend-difference to invert underlay) ====== */
+    .cursor-plus{
+      position: fixed; left:0; top:0; width:0; height:0; z-index: 1000;
+      pointer-events: none; mix-blend-mode: difference; /* invert whatever is under */
+    }
+    .cursor-plus::before, .cursor-plus::after{
+      content:""; position:absolute; left:0; top:0; 
+      border: var(--cursor-stroke) solid var(--fg);
+      width: calc(var(--plus-size)*2); height: 0; transform: translate(-50%, -50%);
+    }
+    .cursor-plus::after{
+      width:0; height: calc(var(--plus-size)*2);
     }
 
-    svg {
-      width: 100%;
-      height: 100%;
-    }
-
-    circle {
-      stroke: var(--fg);
-      stroke-width: var(--stroke-width);
-      fill: none;
-      opacity: var(--stroke-opacity);
-      transition: stroke 0.4s;
-    }
-
-    .cross {
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      transform: translate(-50%, -50%);
-    }
-
-    .cross::before,
-    .cross::after {
-      content: "";
-      position: absolute;
-      background: var(--fg);
-      transition: background 0.4s;
-    }
-
-    .cross::before {
-      width: 100%;
-      height: var(--stroke-width);
-      top: 50%;
-      left: 0;
-      transform: translateY(-50%);
-    }
-
-    .cross::after {
-      width: var(--stroke-width);
-      height: 100%;
-      left: 50%;
-      top: 0;
-      transform: translateX(-50%);
-    }
-
-    .cross.red::before,
-    .cross.red::after {
-      background: red;
-    }
-
-    .cursor-plus {
-      position: fixed;
-      width: 24px;
-      height: 24px;
-      pointer-events: none;
-      z-index: 10000;
-    }
-
-    .cursor-plus::before,
-    .cursor-plus::after {
-      content: "";
-      position: absolute;
-      background: var(--fg);
-    }
-
-    .cursor-plus::before {
-      width: 100%;
-      height: 1px;
-      top: 50%;
-      left: 0;
-      transform: translateY(-50%);
-    }
-
-    .cursor-plus::after {
-      width: 1px;
-      height: 100%;
-      left: 50%;
-      top: 0;
-      transform: translateX(-50%);
-    }
-
-    .banner {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: var(--banner-height);
-      overflow: hidden;
-      background: transparent;
-      z-index: 9999;
-    }
-
-    .ticker {
-      position: absolute;
-      left: 0;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      white-space: nowrap;
-      line-height: var(--banner-height);
-      font-size: clamp(10px, 1.1vw, 14px);
-      letter-spacing: 0.08em;
-      color: var(--fg);
-      animation: marquee 22s linear infinite;
-    }
-
-    @keyframes marquee {
-      from {
-        transform: translateX(0);
-      }
-
-      to {
-        transform: translateX(-50%);
-      }
-    }
-
-    .chunk {
-      margin-right: 15rem;
-    }
-
-    .grotto-word {
-      padding: 0 2px;
-    }
-
-    /* Inverted mode */
-    body.inverted .frame,
-    body.inverted circle,
-    body.inverted .cross::before,
-    body.inverted .cross::after,
-    body.inverted .cursor-plus::before,
-    body.inverted .cursor-plus::after {
-      background: #000;
-      stroke: #000;
-    }
-
+    /* Utility */
+    .visually-hidden{ position:absolute !important; clip: rect(1px, 1px, 1px, 1px); padding:0 !important; border:0 !important; height:1px !important; width:1px !important; overflow:hidden; }
   </style>
 </head>
 <body>
-  <div class="stage">
-    <div class="frame">
-      <svg viewBox="0 0 100 100">
-        <circle cx="35" cy="50" r="20" />
-        <circle cx="65" cy="50" r="20" />
-      </svg>
-      <div id="crossLeft" class="cross in-circle" style="top: 60%; left: 42%;"></div>
-      <div id="crossRight" class="cross in-circle" style="top: 60%; left: 58%;"></div>
-    </div>
-  </div>
+  <div id="cursor" class="cursor-plus" aria-hidden="true"></div>
 
-  <div class="banner" aria-label="welcome ticker">
-    <div class="ticker">
-      <span class="chunk">WELCOME TO THE <span class="grotto-word" id="grottoToggle"
-          title="Click to toggle GUERILLA">GROTTO</span></span>
-      <span class="chunk">WELCOME TO THE <span class="grotto-word">GROTTO</span></span>
-      <span class="chunk">WELCOME TO THE <span class="grotto-word">GROTTO</span></span>
-      <span class="chunk">WELCOME TO THE <span class="grotto-word">GROTTO</span></span>
-      <span class="chunk">WELCOME TO THE <span class="grotto-word">GROTTO</span></span>
-      <span class="chunk">WELCOME TO THE <span class="grotto-word">GROTTO</span></span>
-    </div>
-  </div>
+  <!-- Centered SVG frame (rectangle + 2 circles + plus signs) -->
+  <main class="stage">
+    <svg id="ui" class="frame" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg" aria-labelledby="title desc">
+      <title id="title">guerrillagrotto composition</title>
+      <desc id="desc">Rectangle framing two circles. Left circle has draggable plus; right circle has static plus and rotating issue text. Drag allowed in Guerrilla mode. Colors invert when toggling mode.</desc>
 
-  <div class="cursor-plus"></div>
+      <!-- Shared paint -->
+      <defs>
+        <!-- text-on-a-circle path (slightly inset so it doesn't touch the line, per V4) -->
+        <path id="ringPath" d="M 560,300 m -120,0 a 120,120 0 1,1 240,0 a 120,120 0 1,1 -240,0" />
+      </defs>
+
+      <!-- Frame rectangle (thin stroke; matches circles and pluses per V2) -->
+      <g id="composition" stroke="currentColor" fill="none" stroke-width="2.2">
+        <rect id="frameRect" x="120" y="120" width="560" height="360" rx="2"/>
+
+        <!-- Circles (same size, centered within rectangle horizontally) -->
+        <circle id="leftCircle" cx="320" cy="300" r="120" />
+        <circle id="rightCircle" cx="560" cy="300" r="120" />
+
+        <!-- Rotating issue text inside right circle, counterclockwise (V1 & V7 update) -->
+        <g class="rotateCCW">
+          <text id="issue" fill="currentColor" font-size="16" letter-spacing="0.08em">
+            <textPath href="#ringPath" startOffset="0%">ISSUE 001 — 12/12</textPath>
+          </text>
+        </g>
+
+        <!-- Plus signs INSIDE circles (thin stroke; V2). Slightly towards center but still lower-right quadrant (V4). -->
+        <!-- RIGHT (static) target -->
+        <g id="rightPlus" class="plus-hit" transform="translate(600, 340)">
+          <line x1="-14" y1="0" x2="14" y2="0" />
+          <line x1="0" y1="-14" x2="0" y2="14" />
+        </g>
+
+        <!-- LEFT (draggable) target -->
+        <g id="leftPlus" class="plus-hit" transform="translate(360, 340)">
+          <line x1="-14" y1="0" x2="14" y2="0" />
+          <line x1="0" y1="-14" x2="0" y2="14" />
+        </g>
+      </g>
+    </svg>
+  </main>
+
+  <!-- Endless loop banner (bottom) with interaction on the word "grotto" only -->
+  <div class="marquee-wrap">
+    <div id="marquee" class="marquee" aria-hidden="true"></div>
+  </div>
 
   <script>
-    const cursor = document.querySelector('.cursor-plus');
-    document.addEventListener('pointermove', (e) => {
-      cursor.style.transform = `translate(${e.clientX - 12}px, ${e.clientY - 12}px)`;
-    });
+    /* ================= Custom PLUS cursor ================= */
+    const cursor = document.getElementById('cursor');
+    const setCursorPos = (e) => { cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`; };
+    window.addEventListener('mousemove', setCursorPos, {passive:true});
+    window.addEventListener('touchmove', (e)=>{
+      if(e.touches && e.touches[0]) setCursorPos({clientX:e.touches[0].clientX, clientY:e.touches[0].clientY});
+    }, {passive:true});
 
-    const ticker = document.querySelector('.ticker');
-    const toggleEl = document.getElementById('grottoToggle');
+    /* ================= Marquee builder (endless, bottom) ================= */
+    const marquee = document.getElementById('marquee');
 
-    function glitchSwap(from, to, done) {
-      const els = Array.from(document.querySelectorAll('.grotto-word'));
-      const maxLen = Math.max(from.length, to.length);
-      const chars = '!@#$%^&*()+{}[]<>?/\\|~';
-      let i = 0;
-
-      const step = () => {
-        els.forEach(el => {
-          const fixed = to.slice(0, i);
-          let rest = '';
-          for (let j = i; j < maxLen; j++) {
-            rest += chars[Math.floor(Math.random() * chars.length)];
-          }
-          el.textContent = (fixed + rest).slice(0, to.length);
-        });
-
-        i++;
-        if (i <= maxLen) requestAnimationFrame(step);
-        else {
-          els.forEach(el => el.textContent = to);
-          if (done) done();
+    function buildMarquee(){
+      const phrase = ["welcome", "to", "the", "grotto"]; // small + simple
+      const one = document.createElement('div'); one.className = 'chunk';
+      for (let i=0;i<30;i++) { // enough to overflow for seamless loop
+        for (let w of phrase){
+          const span = document.createElement('span');
+          span.textContent = w;
+          if (w === 'grotto') span.className = 'grotto';
+          one.appendChild(span);
         }
-      };
-      step();
+      }
+      const two = one.cloneNode(true);
+      marquee.appendChild(one);
+      marquee.appendChild(two);
     }
+    buildMarquee();
 
-    // Pause scroll on hover
-    document.querySelectorAll('.grotto-word').forEach(el => {
-      el.addEventListener('mouseenter', () => ticker.style.animationPlayState = 'paused');
-      el.addEventListener('mouseleave', () => ticker.style.animationPlayState = 'running');
+    // Hover on the word "grotto" should pause the loop and show hover affordance.
+    marquee.addEventListener('mouseover', (e)=>{
+      if(e.target.classList.contains('grotto')){
+        marquee.classList.add('paused');
+        e.target.classList.add('hover-affordance');
+      }
+    });
+    marquee.addEventListener('mouseout', (e)=>{
+      if(e.target.classList.contains('grotto')){
+        marquee.classList.remove('paused');
+        e.target.classList.remove('hover-affordance');
+      }
     });
 
-    toggleEl.addEventListener('click', () => {
-      const toG = !document.body.classList.contains('inverted');
-      document.body.classList.toggle('inverted', toG);
-      glitchSwap(toG ? 'GROTTO' : 'GUERILLA', toG ? 'GUERILLA' : 'GROTTO');
+    /* ================= Mode toggle via clicking any "grotto" word ================= */
+    let guerrillaMode = false; // drag only allowed in this mode
+    function randomChar(){
+      const chars = '!<>-_\/[]{}—=+*^?#________';
+      return chars[Math.floor(Math.random()*chars.length)];
+    }
+    function glitchSwap(node, toText){
+      const from = node.textContent;
+      const max = Math.max(from.length, toText.length);
+      let i=0;
+      const timer = setInterval(()=>{
+        const out = [];
+        for(let k=0;k<max;k++){
+          const targetCh = (k < toText.length) ? toText[k] : '';
+          if(k < i){ out.push(targetCh); }
+          else { out.push(randomChar()); }
+        }
+        node.textContent = out.join('');
+        i++;
+        if(i>max){ clearInterval(timer); node.textContent = toText; }
+      }, 18);
+    }
+
+    function toggleMode(){
+      guerrillaMode = !guerrillaMode;
+      document.body.classList.toggle('inverted', guerrillaMode);
+      // swap all instances of grotto <-> Gurilla with glitch
+      document.querySelectorAll('.grotto').forEach(el=>{
+        const to = guerrillaMode ? 'Gurilla' : 'grotto';
+        glitchSwap(el, to);
+      });
+    }
+
+    marquee.addEventListener('click', (e)=>{
+      if(e.target.classList.contains('grotto')){
+        toggleMode();
+      }
     });
 
-    // Cross drag
-    const crossLeft = document.getElementById('crossLeft');
-    const crossRight = document.getElementById('crossRight');
+    /* ================= Draggable left plus, target overlap detection ================= */
+    const svg = document.getElementById('ui');
+    const leftPlus = document.getElementById('leftPlus');
+    const rightPlus = document.getElementById('rightPlus');
 
-    let isDragging = false, offX = 0, offY = 0;
-    function centerOf(el) {
-      const r = el.getBoundingClientRect();
-      return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
-    }
-    function distance(a, b) {
-      const dx = a.x - b.x, dy = a.y - b.y;
-      return Math.hypot(dx, dy);
-    }
-
-    function onDown(e) {
-      if (!document.body.classList.contains('inverted')) return;
-      isDragging = true;
-      const r = crossLeft.getBoundingClientRect();
-      const sx = e.touches ? e.touches[0].clientX : e.clientX;
-      const sy = e.touches ? e.touches[0].clientY : e.clientY;
-      offX = sx - r.left; offY = sy - r.top;
+    function svgPointFromEvent(evt){
+      const pt = svg.createSVGPoint();
+      const ctm = svg.getScreenCTM();
+      const x = (evt.touches?evt.touches[0].clientX:evt.clientX);
+      const y = (evt.touches?evt.touches[0].clientY:evt.clientY);
+      pt.x = x; pt.y = y; return pt.matrixTransform(ctm.inverse());
     }
 
-    function onMove(e) {
-      if (!isDragging) return;
-      const x = (e.touches ? e.touches[0].clientX : e.clientX) - offX;
-      const y = (e.touches ? e.touches[0].clientY : e.clientY) - offY;
-      crossLeft.style.left = x + 'px';
-      crossLeft.style.top = y + 'px';
+    let dragging = false;
+    function startDrag(evt){ if(!guerrillaMode) return; dragging = true; evt.preventDefault(); }
+    function endDrag(){ dragging = false; }
+    function onDrag(evt){
+      if(!dragging || !guerrillaMode) return; 
+      const p = svgPointFromEvent(evt);
+      leftPlus.setAttribute('transform', `translate(${p.x}, ${p.y})`);
       checkOverlap();
     }
 
-    function onUp() { isDragging = false; }
+    leftPlus.addEventListener('mousedown', startDrag);
+    window.addEventListener('mouseup', endDrag);
+    leftPlus.addEventListener('touchstart', startDrag, {passive:false});
+    window.addEventListener('touchend', endDrag);
+    window.addEventListener('mousemove', onDrag);
+    window.addEventListener('touchmove', onDrag, {passive:false});
 
-    document.addEventListener('pointermove', onMove);
-    document.addEventListener('pointerup', onUp);
-    crossLeft.addEventListener('pointerdown', onDown);
+    function centerOf(g){
+      const m = g.getCTM();
+      return { x: m.e, y: m.f };
+    }
+    function distance(a,b){ const dx=a.x-b.x, dy=a.y-b.y; return Math.hypot(dx,dy); }
 
-    function checkOverlap() {
-      const a = centerOf(crossRight);
-      const b = centerOf(crossLeft);
-      const d = distance(a, b);
-      const overlapped = d <= 12;
-      crossLeft.classList.toggle('red', overlapped);
-      crossRight.classList.toggle('red', overlapped);
+    let overlapReady = false;
+    function checkOverlap(){
+      const a = centerOf(leftPlus), b = centerOf(rightPlus);
+      const d = distance(a,b);
+      const threshold = 14; // within radius of the small plus shape
+      const ok = d < threshold;
+      overlapReady = ok;
+      leftPlus.classList.toggle('ok', ok);
+      rightPlus.classList.toggle('ok', ok);
     }
 
-    crossLeft.addEventListener('click', () => {
-      if (document.body.classList.contains('inverted') && crossLeft.classList.contains('red'))
+    svg.addEventListener('click', (e)=>{
+      if(overlapReady){
+        // Clicking when overlapped -> go to the secret page
         window.location.href = 'secret.html';
+      }
     });
+
+    /* ================= Accessibility: keyboard fallback ================= */
+    document.addEventListener('keydown', (e)=>{
+      if(e.key.toLowerCase()==='g'){ toggleMode(); }
+    });
+
+    /* ================= Ensure everything scales together ================= */
+    function fitUI(){
+      // keep the SVG within viewport; strokes scale with the viewBox naturally
+      // (frame already centered by grid)
+    }
+    window.addEventListener('resize', fitUI);
+    fitUI();
   </script>
 </body>
 </html>
