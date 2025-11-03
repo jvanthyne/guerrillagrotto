@@ -42,9 +42,8 @@
       right: 0;
       height: var(--banner-height);
       overflow: hidden;
-      /* subtle opaque highlight band; no dividing line */
-      background: color-mix(in oklab, var(--bg) 85%, var(--fg) 15%);
-      z-index: 10;
+      background: color-mix(in oklab, var(--bg) 75%, var(--fg) 25%);
+      z-index: 999;
     }
 
     .banner-track {
@@ -102,6 +101,7 @@
       gap: min(6vw, 48px);
       padding: min(5vw, 40px);
     }
+    .circle-wrap { position: relative; width: 340px; height: 340px; display: grid; place-items: center; }
 
     svg {
       overflow: visible;
@@ -135,8 +135,8 @@
     /* Cross (+) marks near bottom-right of each circle */
     .cross {
       position: absolute;
-      width: 26px;
-      height: 26px;
+      width: 130px; /* 5x bigger */
+      height: 130px;
       opacity: var(--stroke-opacity);
       pointer-events: auto;
     }
@@ -168,21 +168,9 @@
 
 
     /* positions (tuned for the default SVG size below) */
-    .cross.left {
-      /* place inside the left circle, bottom-right quadrant */
-      --offsetX: 8%;
-      --offsetY: 8%;
-      left: calc(25% + var(--offsetX));
-      top: calc(56% + var(--offsetY));
-    }
+    .in-circle { bottom: 18%; right: 18%; }
 
-    .cross.right {
-      /* place inside the right circle, bottom-right quadrant */
-      --offsetX: 8%;
-      --offsetY: 8%;
-      left: calc(75% + var(--offsetX));
-      top: calc(56% + var(--offsetY));
-    }
+    /* right handled by .in-circle shared rule */
 
     /* Draggable styles */
     .draggable { cursor: none; }
@@ -191,10 +179,10 @@
     .cursor-plus {
       position: fixed;
       left: 0; top: 0;
-      width: 44px; height: 44px; /* larger plus sign */
+      width: 24px; height: 24px; /* smaller plus cursor */
       pointer-events: none;
       z-index: 1000;
-      mix-blend-mode: difference; /* invert whatever is beneath */
+      mix-blend-mode: difference;
     }
     .cursor-plus::before,
     .cursor-plus::after {
@@ -241,27 +229,27 @@
   <main class="stage">
     <div class="frame" aria-label="two circles frame">
       <div class="circles">
-        <!-- Left circle (plain ring) -->
-        <svg width="340" height="340" viewBox="0 0 340 340" aria-hidden="true">
-          <circle class="ring" cx="170" cy="170" r="150" stroke-width="var(--stroke-width)"></circle>
-        </svg>
+        <div class="circle-wrap">
+          <svg width="340" height="340" viewBox="0 0 340 340" aria-hidden="true">
+            <circle class="ring" cx="170" cy="170" r="150" stroke-width="var(--stroke-width)"></circle>
+          </svg>
+          <div id="crossLeft" class="cross in-circle" aria-label="static cross"></div>
+        </div>
 
-        <!-- Right circle with counterclockwise rotating text along perimeter -->
-        <svg class="orbit-wrap" width="340" height="340" viewBox="0 0 340 340" aria-label="Issue circle">
-          <defs>
-            <path id="circlePath" d="M170,170 m-140,0 a 140,140 0 1,1 280,0 a 140,140 0 1,1 -280,0" />
-          </defs>
-          <circle class="ring" cx="170" cy="170" r="150" stroke-width="var(--stroke-width)"></circle>
-          <g class="orbit-text">
-            <text>
-              <textPath href="#circlePath" startOffset="0%">ISSUE 01 – DECEMBER 12TH • ISSUE 01 – DECEMBER 12TH • </textPath>
-            </text>
-          </g>
-        </svg>
-
-        <!-- Crosses (bottom-right-ish of each circle). Left is static; Right is draggable. -->
-        <div id="crossLeft" class="cross left" aria-label="static cross"></div>
-        <div id="crossRight" class="cross right draggable" aria-label="draggable cross" title="Drag this + to overlap the other one"></div>
+        <div class="circle-wrap">
+          <svg class="orbit-wrap" width="340" height="340" viewBox="0 0 340 340" aria-label="Issue circle">
+            <defs>
+              <path id="circlePath" d="M170,170 m-130,0 a 130,130 0 1,1 260,0 a 130,130 0 1,1 -260,0" />
+            </defs>
+            <circle class="ring" cx="170" cy="170" r="150" stroke-width="var(--stroke-width)"></circle>
+            <g class="orbit-text">
+              <text>
+                <textPath href="#circlePath" startOffset="0%">ISSUE 01 – DECEMBER 12TH</textPath>
+              </text>
+            </g>
+          </svg>
+          <div id="crossRight" class="cross in-circle draggable" aria-label="draggable cross" title="Drag this + to overlap the other one"></div>
+        </div>
       </div>
     </div>
   </main>
@@ -270,7 +258,7 @@
     // ===== Custom plus-sign cursor that inverts background via mix-blend-mode
     const cursor = document.querySelector('.cursor-plus');
     document.addEventListener('pointermove', (e) => {
-      cursor.style.transform = `translate(${e.clientX - 22}px, ${e.clientY - 22}px)`; // center the 18x18 cursor
+      cursor.style.transform = `translate(${e.clientX - 12}px, ${e.clientY - 12}px)`; // center the 18x18 cursor
     });
 
     // ===== Toggle inverted theme when clicking the word “GROTTO” in the banner (first instance)
