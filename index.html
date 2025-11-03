@@ -42,8 +42,8 @@
       right: 0;
       height: var(--banner-height);
       overflow: hidden;
-      border-bottom: 1px solid color-mix(in oklab, var(--fg) 40%, transparent);
-      background: var(--bg);
+      /* subtle opaque highlight band; no dividing line */
+      background: color-mix(in oklab, var(--bg) 85%, var(--fg) 15%);
       z-index: 10;
     }
 
@@ -51,12 +51,13 @@
       position: absolute;
       white-space: nowrap;
       will-change: transform;
-      animation: marquee 20s linear infinite;
+      animation: marquee 22s linear infinite;
       font-size: 12px; /* simple & small */
       letter-spacing: 0.08em;
       line-height: var(--banner-height);
       color: var(--fg);
     }
+    .banner-chunk { margin-right: 3.5rem; }
 
     @keyframes marquee {
       from { transform: translateX(0); }
@@ -70,7 +71,7 @@
     }
 
     /* Hovering just the word “grotto” inverts it */
-    .banner .grotto-word:hover { background: var(--fg); color: var(--bg); filter: none; }
+    .banner .grotto-word:hover { background: color-mix(in oklab, var(--fg) 22%, transparent); color: var(--fg); filter: none; }
 
     /* Clicking the word toggles theme via JS */
 
@@ -124,7 +125,7 @@
       animation: spin-ccw 14s linear infinite;
     }
 
-    .orbit-wrap:hover .orbit-text { filter: none; fill: var(--bg); stroke: var(--fg); stroke-width: 3px; paint-order: stroke fill; }
+    .orbit-wrap:hover .orbit-text { fill: color-mix(in oklab, var(--fg) 85%, transparent); }
 
     @keyframes spin-ccw {
       from { transform: rotate(0deg); }
@@ -162,6 +163,10 @@
     .cross.red::before,
     .cross.red::after { background: red; }
 
+    /* subtle hover cue for crosses */
+    .cross:hover { filter: brightness(1.2); }
+
+
     /* positions (tuned for the default SVG size below) */
     .cross.left {
       /* place inside the left circle, bottom-right quadrant */
@@ -186,7 +191,7 @@
     .cursor-plus {
       position: fixed;
       left: 0; top: 0;
-      width: 18px; height: 18px;
+      width: 44px; height: 44px; /* larger plus sign */
       pointer-events: none;
       z-index: 1000;
       mix-blend-mode: difference; /* invert whatever is beneath */
@@ -218,18 +223,17 @@
   <!-- Auto-scrolling banner across top -->
   <div class="banner" aria-label="welcome banner">
     <div id="bannerTrack" class="banner-track">
-      <!-- Repeat the phrase with spacing; highlight just the word ‘grotto’ for interactions -->
-      <span>WELCOME TO THE <span class="grotto-word" id="grottoToggle" title="Click to invert the page">GROTTO</span>&nbsp;&nbsp;&nbsp;</span>
-      <span>WELCOME TO THE <span class="grotto-word">GROTTO</span>&nbsp;&nbsp;&nbsp;</span>
-      <span>WELCOME TO THE <span class="grotto-word">GROTTO</span>&nbsp;&nbsp;&nbsp;</span>
-      <span>WELCOME TO THE <span class="grotto-word">GROTTO</span>&nbsp;&nbsp;&nbsp;</span>
-      <span>WELCOME TO THE <span class="grotto-word">GROTTO</span>&nbsp;&nbsp;&nbsp;</span>
-      <span>WELCOME TO THE <span class="grotto-word">GROTTO</span>&nbsp;&nbsp;&nbsp;</span>
+      <span class="banner-chunk">WELCOME TO THE <span class="grotto-word" id="grottoToggle" title="Click to invert the page">GROTTO</span></span>
+      <span class="banner-chunk">WELCOME TO THE <span class="grotto-word">GROTTO</span></span>
+      <span class="banner-chunk">WELCOME TO THE <span class="grotto-word">GROTTO</span></span>
+      <span class="banner-chunk">WELCOME TO THE <span class="grotto-word">GROTTO</span></span>
+      <span class="banner-chunk">WELCOME TO THE <span class="grotto-word">GROTTO</span></span>
+      <span class="banner-chunk">WELCOME TO THE <span class="grotto-word">GROTTO</span></span>
       <!-- Duplicate to allow seamless scroll -->
-      <span>WELCOME TO THE <span class="grotto-word">GROTTO</span>&nbsp;&nbsp;&nbsp;</span>
-      <span>WELCOME TO THE <span class="grotto-word">GROTTO</span>&nbsp;&nbsp;&nbsp;</span>
-      <span>WELCOME TO THE <span class="grotto-word">GROTTO</span>&nbsp;&nbsp;&nbsp;</span>
-      <span>WELCOME TO THE <span class="grotto-word">GROTTO</span>&nbsp;&nbsp;&nbsp;</span>
+      <span class="banner-chunk">WELCOME TO THE <span class="grotto-word">GROTTO</span></span>
+      <span class="banner-chunk">WELCOME TO THE <span class="grotto-word">GROTTO</span></span>
+      <span class="banner-chunk">WELCOME TO THE <span class="grotto-word">GROTTO</span></span>
+      <span class="banner-chunk">WELCOME TO THE <span class="grotto-word">GROTTO</span></span>
     </div>
   </div>
 
@@ -266,7 +270,7 @@
     // ===== Custom plus-sign cursor that inverts background via mix-blend-mode
     const cursor = document.querySelector('.cursor-plus');
     document.addEventListener('pointermove', (e) => {
-      cursor.style.transform = `translate(${e.clientX - 9}px, ${e.clientY - 9}px)`; // center the 18x18 cursor
+      cursor.style.transform = `translate(${e.clientX - 22}px, ${e.clientY - 22}px)`; // center the 18x18 cursor
     });
 
     // ===== Toggle inverted theme when clicking the word “GROTTO” in the banner (first instance)
