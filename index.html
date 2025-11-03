@@ -1,30 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>guerrillagrotto.space</title>
+  <link rel="icon" type="image/svg+xml"
+    href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none' stroke='%23000' stroke-width='4'><circle cx='32' cy='32' r='26'/><path d='M32 14v36M14 32h36'/></svg>'">
   <style>
     :root {
       --bg: #000;
       --fg: #fff;
-      --accent: #fff;
       --stroke-opacity: 0.65;
-      --stroke-width: 2px; /* thinner stroke to match frame + plus signs */
-      --banner-height: 44px; /* bottom ticker height */
-      --circle: clamp(260px, 36vw, 560px); /* responsive circle size */
+      --stroke-width: 2px;
+      --banner-height: 44px;
+      --circle: clamp(260px, 36vw, 560px);
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-    }
-
-    /* Inverted theme */
-    body.inverted {
-      --bg: #fff;
-      --fg: #000;
-      --accent: #000;
-    }
-
-    html, body {
-      height: 100%;
     }
 
     body {
@@ -32,125 +22,50 @@
       background: var(--bg);
       color: var(--fg);
       font-family: var(--mono);
-      cursor: none; /* we draw our own cursor */
       overflow: hidden;
+      transition: background 0.4s, color 0.4s;
     }
 
-    /* Top auto-scrolling banner */
-    .banner {
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      height: var(--banner-height);
-      overflow: hidden;
-      background: transparent; /* no band */
-      z-index: 9999;
+    body.inverted {
+      background: #fff;
+      color: #000;
     }
 
-    .ticker {
-      position: absolute;
-      left: 0; top: 0; right: 0; bottom: 0;
-      white-space: nowrap;
-      line-height: var(--banner-height);
-      font-size: clamp(10px, 1.1vw, 14px);
-      letter-spacing: 0.08em;
-      color: var(--fg);
-      animation: marquee 22s linear infinite;
-    }
-    @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-    .chunk { margin-right: 5rem; }
-    .grotto-word { padding: 0 2px; transition: filter 120ms linear; }
-    .grotto-word:hover { filter: brightness(1.35); }
-    @keyframes floatLoop { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-    .banner-text { font-size: 12px; letter-spacing: 0.08em; line-height: 1; color: var(--fg); }
-    .banner-gap { margin-left: 3rem; }
-    .grotto-word { padding: 0 2px; transition: filter 120ms linear, color 120ms linear, background 120ms linear; }
-    .grotto-word:hover { filter: brightness(1.35); }
-    .banner-chunk { margin-right: 3.5rem; }
-
-    @keyframes marquee {
-      from { transform: translateX(0); }
-      to   { transform: translateX(-50%); }
-    }
-
-    .banner .grotto-word {
-      padding: 0 0.25rem;
-      display: inline-block;
-      transition: filter 120ms linear, background 120ms linear, color 120ms linear;
-    }
-
-    /* Hovering just the word “grotto” inverts it */
-    .banner .grotto-word:hover { background: color-mix(in oklab, var(--fg) 22%, transparent); color: var(--fg); filter: none; }
-
-    /* Clicking the word toggles theme via JS */
-
-    /* Layout */
     .stage {
       position: fixed;
-      inset: 0 0 var(--banner-height) 0; /* leave space for bottom ticker */
+      inset: 0 0 var(--banner-height) 0;
       display: grid;
       place-items: center;
     }
 
     .frame {
       position: relative;
-      width: min(92vw, 1200px);
-      height: min(70vh, 680px);
-      margin: 0 auto;
-      border: 2px solid color-mix(in oklab, var(--fg) 55%, transparent);
-      box-sizing: border-box;
       display: grid;
       place-items: center;
+      border: var(--stroke-width) solid var(--fg);
+      width: min(80vw, 600px);
+      aspect-ratio: 1 / 1;
+      transition: all 0.4s;
     }
-
-    /* Two circles wrapped in a flex row */
-    .circles {
-      position: absolute;
-      inset: 0;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      align-items: center;
-      justify-items: center;
-      gap: min(6vw, 48px);
-      padding: min(5vw, 40px);
-    }
-    .circle-wrap { position: relative; width: var(--circle); height: var(--circle); display: grid; place-items: center; }
 
     svg {
-      overflow: visible;
+      width: 100%;
+      height: 100%;
     }
 
-    .ring {
-      fill: none;
+    circle {
       stroke: var(--fg);
+      stroke-width: var(--stroke-width);
+      fill: none;
       opacity: var(--stroke-opacity);
-      vector-effect: non-scaling-stroke;
+      transition: stroke 0.4s;
     }
 
-    /* Rotating CCW text around right circle */
-    .orbit-text {
-      font-family: var(--mono);
-      font-size: clamp(10px, 1.2vw, 14px);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      fill: var(--fg);
-      transform-origin: 50% 50%;
-      animation: spin-ccw 14s linear infinite;
-    }
-
-    .orbit-wrap:hover .orbit-text { fill: color-mix(in oklab, var(--fg) 85%, transparent); }
-
-    @keyframes spin-ccw {
-      from { transform: rotate(0deg); }
-      to   { transform: rotate(-360deg); }
-    }
-
-    /* Cross (+) marks near bottom-right of each circle */
     .cross {
       position: absolute;
-      width: 130px; /* 5x bigger */
-      height: 130px;
-      opacity: var(--stroke-opacity);
-      pointer-events: auto;
+      width: 20px;
+      height: 20px;
+      transform: translate(-50%, -50%);
     }
 
     .cross::before,
@@ -158,229 +73,241 @@
       content: "";
       position: absolute;
       background: var(--fg);
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
+      transition: background 0.4s;
     }
 
-    .cross::before { /* vertical bar */
-      width: 2px;
-      height: 100%;
-    }
-    .cross::after {  /* horizontal bar */
-      height: 2px;
+    .cross::before {
       width: 100%;
+      height: var(--stroke-width);
+      top: 50%;
+      left: 0;
+      transform: translateY(-50%);
+    }
+
+    .cross::after {
+      width: var(--stroke-width);
+      height: 100%;
+      left: 50%;
+      top: 0;
+      transform: translateX(-50%);
     }
 
     .cross.red::before,
-    .cross.red::after { background: red; }
+    .cross.red::after {
+      background: red;
+    }
 
-    /* subtle hover cue for crosses */
-    .cross:hover { filter: brightness(1.2); }
-
-
-    /* positions (tuned for the default SVG size below) */
-    .in-circle { bottom: 18%; right: 18%; }
-
-    /* right handled by .in-circle shared rule */
-
-    /* Draggable styles */
-    .draggable { cursor: none; }
-
-    /* Enable dragging only in guerilla mode */
-    body:not(.guerilla) .draggable { pointer-events: none; }
-
-    /* Plus positions inside each circle: slightly toward center but bottom-right */
-    .in-circle { bottom: 18%; right: 18%; }
-
-    /* Rays from the right cross */
-    /* removed rays for right cross */
-    .ray.h { height: 2px; width: 0; }
-    .ray.v { width: 2px; height: 0; }
-    .ray.d { height: 2px; width: 0; transform: rotate(45deg); }
-    /* removed keyframes growW */ to { width: 200vmax; } }
-    /* removed keyframes growH */ to { height: 200vmax; } }
-
-    /* Custom plus-sign cursor that inverts underlying content */
     .cursor-plus {
       position: fixed;
-      left: 0; top: 0;
-      width: 24px; height: 24px; /* smaller plus cursor */
+      width: 24px;
+      height: 24px;
       pointer-events: none;
-      z-index: 1000;
-      mix-blend-mode: difference;
+      z-index: 10000;
     }
+
     .cursor-plus::before,
     .cursor-plus::after {
       content: "";
       position: absolute;
-      left: 50%; top: 50%;
-      transform: translate(-50%, -50%);
-      background: var(--accent);
+      background: var(--fg);
     }
-    .cursor-plus::before { width: 1px; height: 100%; }
-    .cursor-plus::after  { width: 100%; height: 1px; }
 
-    /* Utility: visually hide outline when focusing via mouse */
-    :focus { outline-color: color-mix(in oklab, var(--fg) 60%, transparent); }
-
-    /* Responsiveness tweaks */
-    @media (max-width: 800px) {
-      .frame { height: min(62vh, 560px); }
+    .cursor-plus::before {
+      width: 100%;
+      height: 1px;
+      top: 50%;
+      left: 0;
+      transform: translateY(-50%);
     }
-    .glitch { text-shadow: 0 0 2px var(--fg); }
+
+    .cursor-plus::after {
+      width: 1px;
+      height: 100%;
+      left: 50%;
+      top: 0;
+      transform: translateX(-50%);
+    }
+
+    .banner {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: var(--banner-height);
+      overflow: hidden;
+      background: transparent;
+      z-index: 9999;
+    }
+
+    .ticker {
+      position: absolute;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      white-space: nowrap;
+      line-height: var(--banner-height);
+      font-size: clamp(10px, 1.1vw, 14px);
+      letter-spacing: 0.08em;
+      color: var(--fg);
+      animation: marquee 22s linear infinite;
+    }
+
+    @keyframes marquee {
+      from {
+        transform: translateX(0);
+      }
+
+      to {
+        transform: translateX(-50%);
+      }
+    }
+
+    .chunk {
+      margin-right: 15rem;
+    }
+
+    .grotto-word {
+      padding: 0 2px;
+    }
+
+    /* Inverted mode */
+    body.inverted .frame,
+    body.inverted circle,
+    body.inverted .cross::before,
+    body.inverted .cross::after,
+    body.inverted .cursor-plus::before,
+    body.inverted .cursor-plus::after {
+      background: #000;
+      stroke: #000;
+    }
+
   </style>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none' stroke='%23000' stroke-width='4'><circle cx='32' cy='32' r='26'/><path d='M32 14v36M14 32h36'/></svg>'>
 </head>
 <body>
-  <!-- Custom invert+ cursor -->
-  <div class="cursor-plus" aria-hidden="true"></div>
+  <div class="stage">
+    <div class="frame">
+      <svg viewBox="0 0 100 100">
+        <circle cx="35" cy="50" r="20" />
+        <circle cx="65" cy="50" r="20" />
+      </svg>
+      <div id="crossLeft" class="cross in-circle" style="top: 60%; left: 42%;"></div>
+      <div id="crossRight" class="cross in-circle" style="top: 60%; left: 58%;"></div>
+    </div>
+  </div>
 
-  <!-- Auto-scrolling banner across top -->
   <div class="banner" aria-label="welcome ticker">
     <div class="ticker">
-      <span class="chunk">WELCOME TO THE <span class="grotto-word" id="grottoToggle" title="Click to toggle GUERILLA">GROTTO</span></span>
+      <span class="chunk">WELCOME TO THE <span class="grotto-word" id="grottoToggle"
+          title="Click to toggle GUERILLA">GROTTO</span></span>
       <span class="chunk">WELCOME TO THE <span class="grotto-word">GROTTO</span></span>
-      <span class="chunk">WELCOME TO THE <span class="grotto-word">GROTTO</span></span>
-      <span class="chunk">WELCOME TO THE <span class="grotto-word">GROTTO</span></span>
-      <span class="chunk">WELCOME TO THE <span class="grotto-word">GROTTO</span></span>
-      <span class="chunk">WELCOME TO THE <span class="grotto-word">GROTTO</span></span>
-      <!-- duplicate for seamless loop -->
       <span class="chunk">WELCOME TO THE <span class="grotto-word">GROTTO</span></span>
       <span class="chunk">WELCOME TO THE <span class="grotto-word">GROTTO</span></span>
       <span class="chunk">WELCOME TO THE <span class="grotto-word">GROTTO</span></span>
       <span class="chunk">WELCOME TO THE <span class="grotto-word">GROTTO</span></span>
     </div>
   </div>
-  </div>
 
-  <!-- Main stage -->
-  <main class="stage">
-    <div class="frame" aria-label="two circles frame">
-      <div class="circles">
-        <div class="circle-wrap">
-          <svg width="100%" height="100%" viewBox="0 0 340 340" aria-hidden="true">
-            <circle class="ring" cx="170" cy="170" r="150" stroke-width="var(--stroke-width)"></circle>
-          </svg>
-          <div id="crossLeft" class="cross in-circle draggable" aria-label="draggable cross" title="Drag this + to overlap the other one"></div>
-        </div>
-
-        <div class="circle-wrap">
-          <svg class="orbit-wrap" width="340" height="340" viewBox="0 0 340 340" aria-label="Issue circle">
-            <defs>
-              <path id="circlePath" d="M170,170 m-130,0 a 130,130 0 1,1 260,0 a 130,130 0 1,1 -260,0" />
-            </defs>
-            <circle class="ring" cx="170" cy="170" r="150" stroke-width="var(--stroke-width)"></circle>
-            <g class="orbit-text">
-              <text>
-                <textPath href="#circlePath" startOffset="0%">ISSUE 001 12/12</textPath>
-              </text>
-            </g>
-          </svg>
-          <div id="crossRight" class="cross in-circle" aria-label="static cross"></div>
-            <div class="ray v"></div>
-            <div class="ray d"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </main>
+  <div class="cursor-plus"></div>
 
   <script>
-    // Custom plus-sign cursor
     const cursor = document.querySelector('.cursor-plus');
     document.addEventListener('pointermove', (e) => {
       cursor.style.transform = `translate(${e.clientX - 12}px, ${e.clientY - 12}px)`;
     });
 
-    // Toggle GUERILLA + invert, and switch banner word text
-    const toggleEl = document.getElementById('grottoToggle');
     const ticker = document.querySelector('.ticker');
-    function setWords(to){ document.querySelectorAll('.grotto-word').forEach(el=> el.textContent = to); }
+    const toggleEl = document.getElementById('grottoToggle');
 
-    // Pause ticker when hovering any GROTTO/GUERILLA word
-    function bindHoverPause(){
-      document.querySelectorAll('.grotto-word').forEach(el=>{
-        el.addEventListener('mouseenter', ()=>{ if(ticker) ticker.style.animationPlayState = 'paused'; });
-        el.addEventListener('mouseleave', ()=>{ if(ticker) ticker.style.animationPlayState = 'running'; });
-      });
-    }
-    bindHoverPause();
-
-    // Letter-by-letter glitch swap
-    function glitchSwap(from, to, done){
+    function glitchSwap(from, to, done) {
       const els = Array.from(document.querySelectorAll('.grotto-word'));
       const maxLen = Math.max(from.length, to.length);
-      const chars = '!@#$%^&*()+{}[]<>?/\|~';
+      const chars = '!@#$%^&*()+{}[]<>?/\\|~';
       let i = 0;
+
       const step = () => {
-        els.forEach(el=>{
+        els.forEach(el => {
           const fixed = to.slice(0, i);
           let rest = '';
-          for(let j=i;j<maxLen;j++){ rest += chars[Math.floor(Math.random()*chars.length)]; }
+          for (let j = i; j < maxLen; j++) {
+            rest += chars[Math.floor(Math.random() * chars.length)];
+          }
           el.textContent = (fixed + rest).slice(0, to.length);
         });
+
         i++;
-        if(i<=maxLen){ requestAnimationFrame(step); }
-        else { els.forEach(el=> el.textContent = to); if(done) done(); }
+        if (i <= maxLen) requestAnimationFrame(step);
+        else {
+          els.forEach(el => el.textContent = to);
+          if (done) done();
+        }
       };
       step();
     }
 
+    // Pause scroll on hover
+    document.querySelectorAll('.grotto-word').forEach(el => {
+      el.addEventListener('mouseenter', () => ticker.style.animationPlayState = 'paused');
+      el.addEventListener('mouseleave', () => ticker.style.animationPlayState = 'running');
+    });
+
     toggleEl.addEventListener('click', () => {
-      const toG = !document.body.classList.contains('guerilla');
-      document.body.classList.toggle('guerilla', toG);
+      const toG = !document.body.classList.contains('inverted');
       document.body.classList.toggle('inverted', toG);
       glitchSwap(toG ? 'GROTTO' : 'GUERILLA', toG ? 'GUERILLA' : 'GROTTO');
     });
 
-    // Cross logic remains
-    const crossLeft  = document.getElementById('crossLeft');
+    // Cross drag
+    const crossLeft = document.getElementById('crossLeft');
     const crossRight = document.getElementById('crossRight');
 
-    function centerOf(el){ const r = el.getBoundingClientRect(); return { x: r.left + r.width/2, y: r.top + r.height/2 }; }
-    function distance(a,b){ const dx=a.x-b.x, dy=a.y-b.y; return Math.hypot(dx,dy); }
-
-    let isDragging = false; let offX=0, offY=0;
-    function onDown(e){ if(!document.body.classList.contains('guerilla')) return; isDragging = true; const r = crossLeft.getBoundingClientRect(); const sx = e.touches ? e.touches[0].clientX : e.clientX; const sy = e.touches ? e.touches[0].clientY : e.clientY; offX = sx - r.left; offY = sy - r.top; }
-    function onMove(e){ if(!isDragging) return; const x = (e.touches ? e.touches[0].clientX : e.clientX) - offX; const y = (e.touches ? e.touches[0].clientY : e.clientY) - offY; crossLeft.style.left = x + 'px'; crossLeft.style.top  = y + 'px'; checkOverlap(); }
-    function onUp(){ isDragging = false; }
-
-    crossLeft.addEventListener('pointerdown', onDown);
-    document.addEventListener('pointermove', onMove);
-    document.addEventListener('pointerup', onUp);
-    crossLeft.addEventListener('touchstart', onDown, {passive:true});
-    document.addEventListener('touchmove', onMove, {passive:false});
-    document.addEventListener('touchend', onUp);
-
-    function checkOverlap(){ const a = centerOf(crossRight); const b = centerOf(crossLeft); const d = distance(a,b); const overlapped = d <= 12; crossLeft.classList.toggle('red', overlapped); crossRight.classList.toggle('red', overlapped); crossLeft.dataset.overlapped = overlapped ? '1' : '0'; }
-
-    crossLeft.addEventListener('click', () => { if(document.body.classList.contains('guerilla') && crossLeft.dataset.overlapped === '1') window.location.href = 'secret.html'; });
-
-    checkOverlap();
+    let isDragging = false, offX = 0, offY = 0;
+    function centerOf(el) {
+      const r = el.getBoundingClientRect();
+      return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
     }
-    function onUp(){ isDragging = false; }
+    function distance(a, b) {
+      const dx = a.x - b.x, dy = a.y - b.y;
+      return Math.hypot(dx, dy);
+    }
 
-    crossLeft.addEventListener('pointerdown', onDown);
+    function onDown(e) {
+      if (!document.body.classList.contains('inverted')) return;
+      isDragging = true;
+      const r = crossLeft.getBoundingClientRect();
+      const sx = e.touches ? e.touches[0].clientX : e.clientX;
+      const sy = e.touches ? e.touches[0].clientY : e.clientY;
+      offX = sx - r.left; offY = sy - r.top;
+    }
+
+    function onMove(e) {
+      if (!isDragging) return;
+      const x = (e.touches ? e.touches[0].clientX : e.clientX) - offX;
+      const y = (e.touches ? e.touches[0].clientY : e.clientY) - offY;
+      crossLeft.style.left = x + 'px';
+      crossLeft.style.top = y + 'px';
+      checkOverlap();
+    }
+
+    function onUp() { isDragging = false; }
+
     document.addEventListener('pointermove', onMove);
     document.addEventListener('pointerup', onUp);
-    crossLeft.addEventListener('touchstart', onDown, {passive:true});
-    document.addEventListener('touchmove', onMove, {passive:false});
-    document.addEventListener('touchend', onUp);
+    crossLeft.addEventListener('pointerdown', onDown);
 
-    function checkOverlap(){
-      const a = centerOf(crossRight); const b = centerOf(crossLeft);
-      const d = distance(a,b); const overlapped = d <= 12;
+    function checkOverlap() {
+      const a = centerOf(crossRight);
+      const b = centerOf(crossLeft);
+      const d = distance(a, b);
+      const overlapped = d <= 12;
       crossLeft.classList.toggle('red', overlapped);
       crossRight.classList.toggle('red', overlapped);
-      crossLeft.dataset.overlapped = overlapped ? '1' : '0';
     }
 
     crossLeft.addEventListener('click', () => {
-      if(document.body.classList.contains('guerilla') && crossLeft.dataset.overlapped === '1') window.location.href = 'secret.html';
+      if (document.body.classList.contains('inverted') && crossLeft.classList.contains('red'))
+        window.location.href = 'secret.html';
     });
-
-    checkOverlap();
   </script>
 </body>
 </html>
