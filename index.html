@@ -2,249 +2,351 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>guerrilla grotto</title>
-  <link rel="icon" type="image/png" href="guerrillagrottowine.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>WELCOME TO THE GROTTO — INDEX</title>
   <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    html,body{height:100%}
-    body{
-      background:#000;color:#e6e6e6;
-      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
-      display:grid;place-items:center;overflow:hidden; /* no scrolling */
+    :root {
+      --bg: #000;
+      --fg: #fff;
+      --accent: #fff;
+      --stroke-opacity: 0.65;
+      --stroke-width: 10px; /* thick strokes for the circles */
+      --banner-height: 34px; /* small, simple banner */
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     }
 
-    .wrap{
-      display:flex;flex-direction:column;align-items:center;gap:2.4vh;
-      padding:6vh 6vw;text-align:center;
+    /* Inverted theme */
+    body.inverted {
+      --bg: #fff;
+      --fg: #000;
+      --accent: #000;
     }
 
-    .line{
-      font-size:clamp(14px,3.5vw,22px);
-      letter-spacing:.02em;
-      text-transform:lowercase;
-      user-select:none;
-      white-space:nowrap;
+    html, body {
+      height: 100%;
     }
 
-    /* interactive ONLY on the word "something" */
-    .something{
-      color:#e6e6e6;
-      cursor:pointer;
-      transition:color .12s ease;
-      outline:none;
-    }
-    .something:hover{color:#ff2b2b}          /* red hover */
-    .something:focus-visible{
-      outline:2px dashed #ff2b2b;outline-offset:2px; /* keyboard access */
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--mono);
+      cursor: none; /* we draw our own cursor */
+      overflow: hidden;
     }
 
-    /* overlays for win-sequence */
-    .flash{
-      position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;
-      transition:opacity 120ms linear;
-    }
-    .flash.on{opacity:1}
-    .crt{
-      position:fixed;inset:0;display:none;background:#fff;transform-origin:center;
-    }
-    .crt.on{display:block;animation:tvOff 600ms ease-in forwards}
-    @keyframes tvOff{
-      0%   {transform:scaleY(1); opacity:1;}
-      75%  {transform:scaleY(0.02); opacity:1; box-shadow:0 0 18px 6px rgba(255,255,255,.9) inset, 0 0 24px rgba(255,255,255,.9);}
-      100% {transform:scaleY(0); opacity:0;}
+    /* Top auto-scrolling banner */
+    .banner {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: var(--banner-height);
+      overflow: hidden;
+      border-bottom: 1px solid color-mix(in oklab, var(--fg) 40%, transparent);
+      background: var(--bg);
+      z-index: 10;
     }
 
-    /* BIG spinning PNG bottom-right (500% bigger) */
-    .corner-spin{
-      position:fixed;right:10px;bottom:28px; /* above ticker */
-      width:130px;height:130px;
-      pointer-events:none;
-    }
-    .corner-spin img{
-      width:100%;height:100%;display:block;
-      transform-origin:50% 50%;
-      animation:spin 4s linear infinite;
-    }
-    @keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
-    @media (max-width:480px){
-      .corner-spin{width:96px;height:96px;} /* scale down a bit on small phones */
+    .banner-track {
+      position: absolute;
+      white-space: nowrap;
+      will-change: transform;
+      animation: marquee 20s linear infinite;
+      font-size: 12px; /* simple & small */
+      letter-spacing: 0.08em;
+      line-height: var(--banner-height);
+      color: var(--fg);
     }
 
-    /* single moving banner (visible immediately) */
-    .ticker{
-      position:fixed;bottom:0;left:0;width:100%;
-      height:22px;overflow:hidden;pointer-events:none;
-    }
-    .track{
-      position:absolute;left:0;white-space:nowrap;
-      color:#3d3d3d;font-size:clamp(9px,1.8vw,11px);line-height:22px;
-      animation:scroll 40s linear infinite;
-    }
-    @keyframes scroll{
-      0%{transform:translateX(100%);}
-      100%{transform:translateX(-100%);}
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
     }
 
-    @media (max-width:380px){
-      .line{font-size:clamp(12px,4.2vw,18px)}
-      .ticker{height:20px}
-      .track{line-height:20px}
+    .banner .grotto-word {
+      padding: 0 0.25rem;
+      display: inline-block;
+      transition: filter 120ms linear, background 120ms linear, color 120ms linear;
+    }
+
+    /* Hovering just the word “grotto” inverts it */
+    .banner .grotto-word:hover {
+      filter: invert(1);
+    }
+
+    /* Clicking the word toggles theme via JS */
+
+    /* Layout */
+    .stage {
+      position: absolute;
+      inset: var(--banner-height) 0 0 0; /* sit below banner */
+      display: grid;
+      place-items: center;
+    }
+
+    .frame {
+      position: relative;
+      width: min(92vw, 1200px);
+      height: min(70vh, 680px);
+      border: 1px solid color-mix(in oklab, var(--fg) 55%, transparent);
+      box-sizing: border-box;
+    }
+
+    /* Two circles wrapped in a flex row */
+    .circles {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      justify-items: center;
+      gap: min(6vw, 48px);
+      padding: min(5vw, 40px);
+    }
+
+    svg {
+      overflow: visible;
+    }
+
+    .ring {
+      fill: none;
+      stroke: var(--fg);
+      opacity: var(--stroke-opacity);
+      vector-effect: non-scaling-stroke;
+    }
+
+    /* Rotating CCW text around right circle */
+    .orbit-text {
+      font-family: var(--mono);
+      font-size: clamp(10px, 1.2vw, 14px);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      fill: var(--fg);
+      transform-origin: 50% 50%;
+      animation: spin-ccw 14s linear infinite;
+    }
+
+    .orbit-wrap:hover .orbit-text { filter: invert(1); }
+
+    @keyframes spin-ccw {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(-360deg); }
+    }
+
+    /* Cross (+) marks near bottom-right of each circle */
+    .cross {
+      position: absolute;
+      width: 26px;
+      height: 26px;
+      opacity: var(--stroke-opacity);
+      pointer-events: auto;
+    }
+
+    .cross::before,
+    .cross::after {
+      content: "";
+      position: absolute;
+      background: var(--fg);
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .cross::before { /* vertical bar */
+      width: 2px;
+      height: 100%;
+    }
+    .cross::after {  /* horizontal bar */
+      height: 2px;
+      width: 100%;
+    }
+
+    .cross.red::before,
+    .cross.red::after { background: red; }
+
+    /* positions (tuned for the default SVG size below) */
+    .cross.left {
+      /* anchored relative to left circle */
+      /* approx bottom-right quadrant */
+      --offsetX: 22%;
+      --offsetY: 22%;
+      left: calc(25% + var(--offsetX));
+      top: calc(60% + var(--offsetY));
+    }
+
+    .cross.right {
+      --offsetX: 22%;
+      --offsetY: 22%;
+      left: calc(75% + var(--offsetX));
+      top: calc(60% + var(--offsetY));
+    }
+
+    /* Draggable styles */
+    .draggable { cursor: none; }
+
+    /* Custom plus-sign cursor that inverts underlying content */
+    .cursor-plus {
+      position: fixed;
+      left: 0; top: 0;
+      width: 18px; height: 18px;
+      pointer-events: none;
+      z-index: 1000;
+      mix-blend-mode: difference; /* invert whatever is beneath */
+    }
+    .cursor-plus::before,
+    .cursor-plus::after {
+      content: "";
+      position: absolute;
+      left: 50%; top: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--accent);
+    }
+    .cursor-plus::before { width: 1px; height: 100%; }
+    .cursor-plus::after  { width: 100%; height: 1px; }
+
+    /* Utility: visually hide outline when focusing via mouse */
+    :focus { outline-color: color-mix(in oklab, var(--fg) 60%, transparent); }
+
+    /* Responsiveness tweaks */
+    @media (max-width: 800px) {
+      .frame { height: min(62vh, 560px); }
     }
   </style>
 </head>
 <body>
-  <div class="wrap" id="content">
-    <div class="line">
-      <span class="txt">make </span><span id="make" class="something" role="button" tabindex="0">something</span>
-    </div>
-    <div class="line">
-      <span class="txt">submit </span><span id="submit" class="something" role="button" tabindex="0">something</span>
-    </div>
-    <div class="line">
-      <span class="txt">win </span><span id="win" class="something" role="button" tabindex="0">something</span>
+  <!-- Custom invert+ cursor -->
+  <div class="cursor-plus" aria-hidden="true"></div>
+
+  <!-- Auto-scrolling banner across top -->
+  <div class="banner" aria-label="welcome banner">
+    <div id="bannerTrack" class="banner-track">
+      <!-- Repeat the phrase with spacing; highlight just the word ‘grotto’ for interactions -->
+      <span>WELCOME TO THE <span class="grotto-word" id="grottoToggle" title="Click to invert the page">GROTTO</span>&nbsp;&nbsp;&nbsp;</span>
+      <span>WELCOME TO THE <span class="grotto-word">GROTTO</span>&nbsp;&nbsp;&nbsp;</span>
+      <span>WELCOME TO THE <span class="grotto-word">GROTTO</span>&nbsp;&nbsp;&nbsp;</span>
+      <span>WELCOME TO THE <span class="grotto-word">GROTTO</span>&nbsp;&nbsp;&nbsp;</span>
+      <span>WELCOME TO THE <span class="grotto-word">GROTTO</span>&nbsp;&nbsp;&nbsp;</span>
+      <span>WELCOME TO THE <span class="grotto-word">GROTTO</span>&nbsp;&nbsp;&nbsp;</span>
+      <!-- Duplicate to allow seamless scroll -->
+      <span>WELCOME TO THE <span class="grotto-word">GROTTO</span>&nbsp;&nbsp;&nbsp;</span>
+      <span>WELCOME TO THE <span class="grotto-word">GROTTO</span>&nbsp;&nbsp;&nbsp;</span>
+      <span>WELCOME TO THE <span class="grotto-word">GROTTO</span>&nbsp;&nbsp;&nbsp;</span>
+      <span>WELCOME TO THE <span class="grotto-word">GROTTO</span>&nbsp;&nbsp;&nbsp;</span>
     </div>
   </div>
 
-  <!-- spinning corner image (bottom-right) -->
-  <div class="corner-spin" aria-hidden="true">
-    <img src="wine_spin.png" alt="">
-  </div>
+  <!-- Main stage -->
+  <main class="stage">
+    <div class="frame" aria-label="two circles frame">
+      <div class="circles">
+        <!-- Left circle (plain ring) -->
+        <svg width="340" height="340" viewBox="0 0 340 340" aria-hidden="true">
+          <circle class="ring" cx="170" cy="170" r="150" stroke-width="var(--stroke-width)"></circle>
+        </svg>
 
-  <!-- single bottom moving text banner -->
-  <div class="ticker" aria-hidden="true">
-    <div class="track">
-      accepted files, mp3, mp4, png
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      welcome to the grotto
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      accepted files, mp3, mp4, png
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      welcome to the grotto
+        <!-- Right circle with counterclockwise rotating text along perimeter -->
+        <svg class="orbit-wrap" width="340" height="340" viewBox="0 0 340 340" aria-label="Issue circle">
+          <defs>
+            <path id="circlePath" d="M170,170 m-140,0 a 140,140 0 1,1 280,0 a 140,140 0 1,1 -280,0" />
+          </defs>
+          <circle class="ring" cx="170" cy="170" r="150" stroke-width="var(--stroke-width)"></circle>
+          <g class="orbit-text">
+            <text>
+              <textPath href="#circlePath" startOffset="0%">ISSUE 01 – DECEMBER 12TH • ISSUE 01 – DECEMBER 12TH • </textPath>
+            </text>
+          </g>
+        </svg>
+
+        <!-- Crosses (bottom-right-ish of each circle). Left is static; Right is draggable. -->
+        <div id="crossLeft" class="cross left" aria-label="static cross"></div>
+        <div id="crossRight" class="cross right draggable" aria-label="draggable cross" title="Drag this + to overlap the other one"></div>
+      </div>
     </div>
-  </div>
-
-  <div class="flash" id="flash"></div>
-  <div class="crt" id="crt"></div>
+  </main>
 
   <script>
-    /* letter-by-letter scrambler */
-    class Scrambler {
-      constructor(el, charset='!<>-_\\/[]{}—=+*^?#abcdefghijklmnopqrstuvwxyz0123456789'){
-        this.el = el; this.charset = charset; this.frame = 0; this.req = null; this.queue = [];
-      }
-      to(text) {
-        const from = this.el.textContent;
-        const len = Math.max(from.length, text.length);
-        this.queue = [];
-        for (let i=0;i<len;i++){
-          const a = from[i] || '';
-          const b = text[i] || '';
-          const start = Math.floor(Math.random()*6);
-          const end   = start + 6 + Math.floor(Math.random()*6);
-          this.queue.push({a,b,start,end,ch:''});
-        }
-        cancelAnimationFrame(this.req); this.frame=0;
-        return new Promise(res=>{
-          const step = ()=>{
-            let out='', done=0;
-            for (let i=0;i<this.queue.length;i++){
-              let q=this.queue[i];
-              if (this.frame >= q.end){ done++; out += q.b; }
-              else if (this.frame >= q.start){
-                if (!q.ch || Math.random()<0.3){ q.ch = this.charset[Math.floor(Math.random()*this.charset.length)]; }
-                out += q.ch;
-              } else out += q.a;
-            }
-            this.el.textContent = out;
-            if (done === this.queue.length) res(); else { this.frame++; this.req=requestAnimationFrame(step); }
-          };
-          step();
-        });
-      }
+    // ===== Custom plus-sign cursor that inverts background via mix-blend-mode
+    const cursor = document.querySelector('.cursor-plus');
+    document.addEventListener('pointermove', (e) => {
+      cursor.style.transform = `translate(${e.clientX - 9}px, ${e.clientY - 9}px)`; // center the 18x18 cursor
+    });
+
+    // ===== Toggle inverted theme when clicking the word “GROTTO” in the banner (first instance)
+    const toggleEl = document.getElementById('grottoToggle');
+    toggleEl.addEventListener('click', () => {
+      document.body.classList.toggle('inverted');
+    });
+
+    // ===== Make the right cross draggable, detect overlap with left cross
+    const crossLeft  = document.getElementById('crossLeft');
+    const crossRight = document.getElementById('crossRight');
+
+    let isDragging = false;
+    let dragOffsetX = 0, dragOffsetY = 0;
+
+    const onDown = (e) => {
+      isDragging = true;
+      const rect = crossRight.getBoundingClientRect();
+      const startX = (e.touches ? e.touches[0].clientX : e.clientX);
+      const startY = (e.touches ? e.touches[0].clientY : e.clientY);
+      dragOffsetX = startX - rect.left;
+      dragOffsetY = startY - rect.top;
+    };
+
+    const onMove = (e) => {
+      if(!isDragging) return;
+      const x = (e.touches ? e.touches[0].clientX : e.clientX) - dragOffsetX;
+      const y = (e.touches ? e.touches[0].clientY : e.clientY) - dragOffsetY;
+      crossRight.style.left = `${x}px`;
+      crossRight.style.top  = `${y}px`;
+      checkOverlap();
+    };
+
+    const onUp = () => { isDragging = false; };
+
+    crossRight.addEventListener('pointerdown', onDown);
+    document.addEventListener('pointermove', onMove);
+    document.addEventListener('pointerup', onUp);
+    // Touch support
+    crossRight.addEventListener('touchstart', onDown, {passive:true});
+    document.addEventListener('touchmove', onMove, {passive:false});
+    document.addEventListener('touchend', onUp);
+
+    function centerOf(el){
+      const r = el.getBoundingClientRect();
+      return { x: r.left + r.width/2, y: r.top + r.height/2 };
     }
 
-    /* quick noise glitch (scramble but don't converge) */
-    function glitchNoiseOnce(el, duration=420){
-      const base = el.textContent;
-      const chars='!<>-_\\/[]{}—=+*^?#abcdefghijklmnopqrstuvwxyz0123456789';
-      let t=0; const hop=30;
-      const tick=()=>{
-        let out='';
-        for (let i=0;i<base.length;i++){
-          out += Math.random()<0.55 ? chars[Math.floor(Math.random()*chars.length)] : base[i];
-        }
-        el.textContent = out;
-        t+=hop;
-        if (t<duration) setTimeout(tick, hop);
-        else el.textContent = base;
-      };
-      tick();
+    function distance(a,b){
+      const dx = a.x - b.x, dy = a.y - b.y; return Math.hypot(dx,dy);
     }
 
-    /* MAKE: toggle something <-> anything (glitching to the new word) */
-    (function(){
-      const el = document.getElementById('make');
-      const scr = new Scrambler(el);
-      let any=false;
-      const toggle=()=>{ any=!any; scr.to(any?'anything':'something'); };
-      el.addEventListener('click', toggle);
-      el.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle();} });
-    })();
+    function checkOverlap(){
+      const a = centerOf(crossLeft);
+      const b = centerOf(crossRight);
+      const d = distance(a,b);
+      const threshold = 8; // within 8px counts as "perfectly overlapped"
+      const overlapped = d <= threshold;
+      crossLeft.classList.toggle('red', overlapped);
+      crossRight.classList.toggle('red', overlapped);
+      crossRight.dataset.overlapped = overlapped ? '1' : '0';
+    }
 
-    /* SUBMIT: quick glitch before opening mailto draft */
-    (function(){
-      const el = document.getElementById('submit');
-      const go=()=>{
-        glitchNoiseOnce(el, 420);
-        setTimeout(()=>{
-          const email='bluetilespace@gmail.com';
-          const subject=encodeURIComponent('submission');
-          const body=encodeURIComponent('accepted file types: mp3, mp4, png');
-          window.location.href=`mailto:${email}?subject=${subject}&body=${body}`;
-        }, 440);
-      };
-      el.addEventListener('click', go);
-      el.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();go();} });
-    })();
-
-    /* WIN: individually glitch all text -> white flash -> analog TV off -> empty black page */
-    (function(){
-      const winWord = document.getElementById('win');
-      const flash = document.getElementById('flash');
-      const crt = document.getElementById('crt');
-      const content = document.getElementById('content');
-
-      function glitchAllIndividually(){
-        const lines = Array.from(content.querySelectorAll('.line'));
-        lines.forEach((line, idx)=>{
-          const spans = Array.from(line.querySelectorAll('.txt, .something'));
-          setTimeout(()=>{ spans.forEach(s => glitchNoiseOnce(s, 500)); }, idx * 120);
-        });
+    // If overlapped and clicked, go to a secret page
+    crossRight.addEventListener('click', () => {
+      if(crossRight.dataset.overlapped === '1') {
+        window.location.href = 'secret.html';
       }
+    });
 
-      function sequence(){
-        glitchAllIndividually();
+    // Initial check
+    checkOverlap();
 
-        // white flash
-        setTimeout(()=>{
-          flash.classList.add('on');
-
-          // CRT collapse to black, then blank page
-          setTimeout(()=>{
-            flash.classList.remove('on');
-            crt.classList.add('on');
-            crt.addEventListener('animationend', ()=>{
-              document.body.style.background='#000';
-              document.body.innerHTML=''; // empty black page
-            }, { once:true });
-          }, 180);
-        }, 650);
-      }
-
-      winWord.addEventListener('click', sequence);
-      winWord.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();sequence();} });
-    })();
+    // ===== Accessibility: pause banner on hover (optional but nice) =====
+    const bannerTrack = document.getElementById('bannerTrack');
+    bannerTrack.addEventListener('mouseenter', () => { bannerTrack.style.animationPlayState = 'paused'; });
+    bannerTrack.addEventListener('mouseleave', () => { bannerTrack.style.animationPlayState = 'running'; });
   </script>
 </body>
 </html>
