@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Light</title> <!-- Changed title here -->
+<style>
+    body, html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        background-color: black;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+    }
+
+    img {
+        max-width: 100%;
+        max-height: 100%;
+        transition: filter 0.3s ease; /* smooth brightness transition */
+    }
+
+    /* Green circle button */
+    #darkenButton {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 40px;
+        height: 40px;
+        background-color: green;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        font-size: 20px;
+        user-select: none;
+        z-index: 10; /* ensures it’s on top of the image */
+    }
+
+    #darkenButton:hover {
+        transform: scale(1.1);
+        transition: transform 0.2s;
+    }
+</style>
+</head>
+<body>
+    <img id="myImage" src="light.jpg" alt="Light">
+    <div id="darkenButton">•</div>
+
+    <script>
+        const img = document.getElementById('myImage');
+        const button = document.getElementById('darkenButton');
+        let darkened = false;
+
+        button.addEventListener('click', () => {
+            darkened = !darkened;
+            img.style.filter = darkened ? "brightness(50%)" : "brightness(100%)";
+        });
+    </script>
+</body>
+</html>
