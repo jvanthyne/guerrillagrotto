@@ -46,14 +46,22 @@
     /* Ensure no default cursor anywhere */
     body *{ cursor:none; }
 
-    /* ==== Floating bottom marquee (same as index) ==== */
+    /* ==== Floating marquees ==== */
     .marquee-wrap{
       position: fixed;
-      left: 0; right: 0; bottom: 0;
+      left: 0; right: 0;
       user-select: none;
-      padding-bottom: 8px;
       z-index: 20;
     }
+    .marquee-wrap.bottom{
+      bottom: 0;
+      padding-bottom: 8px;
+    }
+    .marquee-wrap.top{
+      top: 0;
+      padding-top: 8px;
+    }
+
     .marquee{ 
       display: flex; 
       white-space: nowrap; 
@@ -204,7 +212,7 @@
     .product-footer{
       display:flex;
       flex-direction:column;
-      gap:8px;
+      gap:6px;
     }
 
     .product-price{
@@ -216,6 +224,21 @@
       display:flex;
       gap:8px;
       flex-wrap:wrap;
+    }
+
+    .product-secondary{
+      font-size: 10px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .product-secondary button{
+      background:none;
+      border:none;
+      padding:0;
+      color:inherit;
+      text-decoration:underline;
+      text-underline-offset:2px;
     }
 
     .btn{
@@ -267,7 +290,7 @@
       height:0;
       z-index: 1000;
       pointer-events: none;
-      /* no blend mode so it stays visible on both black + white */
+      /* stays visible on both black + white */
       filter: drop-shadow(0 0 1px var(--bg));
     }
     .cursor-plus::before,
@@ -295,6 +318,11 @@
     <a href="index.html">◀ back to grotto</a>
   </div>
 
+  <!-- Top marquee -->
+  <div class="marquee-wrap top">
+    <div id="marqueeTop" class="marquee" aria-hidden="true"></div>
+  </div>
+
   <!-- Centered product composition -->
   <main class="stage">
     <section class="frame" aria-labelledby="product-title">
@@ -311,7 +339,7 @@
             />
           </div>
 
-          <!-- Aux images 002–005 (006 removed) -->
+          <!-- Aux images 002–005 -->
           <div class="thumb-strip" aria-label="Additional views of Issue 001">
             <button class="thumb is-active" data-full="ggproductimage001.png" aria-label="Main cover">
               <img src="ggproductimage001.png" alt="Issue 001 – main cover" />
@@ -358,11 +386,20 @@
 
           <div class="product-footer">
             <p class="product-price">USD 12.00 — includes zine + cup (ships from Berkeley, CA)</p>
+
+            <!-- primary CTA -->
             <div class="product-cta-row">
-              <button class="btn" type="button">add to list</button>
-              <a class="btn" href="mailto:orders@guerrillagrotto.space?subject=Issue%20001%20order">
+              <a
+                class="btn"
+                href="mailto:orders@guerrillagrotto.space?subject=Issue%20001%20order&body=Thanks%20for%20your%20interest%20in%20Issue%20001%2C%20drop%20your%20name%20and%20we%27ll%20respond%20with%20payment%20and%20drop%2Doff%20information%2E%0A%0AThanks."
+              >
                 email to purchase
               </a>
+            </div>
+
+            <!-- secondary: moved add to list -->
+            <div class="product-secondary">
+              <button type="button">add to list</button>
             </div>
           </div>
         </aside>
@@ -370,9 +407,9 @@
     </section>
   </main>
 
-  <!-- Endless loop banner (bottom) with interaction on the word "grotto" only -->
-  <div class="marquee-wrap">
-    <div id="marquee" class="marquee" aria-hidden="true"></div>
+  <!-- Bottom marquee -->
+  <div class="marquee-wrap bottom">
+    <div id="marqueeBottom" class="marquee" aria-hidden="true"></div>
   </div>
 
   <script>
@@ -388,10 +425,19 @@
       }
     }, {passive:true});
 
-    /* ================= Marquee builder (same logic as index) ================= */
-    const marquee = document.getElementById('marquee');
+    /* ================= Build marquees ================= */
+    const marqueeTop = document.getElementById('marqueeTop');
+    const marqueeBottom = document.getElementById('marqueeBottom');
 
-    function buildMarquee(){
+    function buildMarquee(target, makeChunk){
+      if(!target) return;
+      const one = makeChunk();
+      const two = one.cloneNode(true);
+      target.appendChild(one);
+      target.appendChild(two);
+    }
+
+    function makeBottomChunk(){
       const one = document.createElement('div');
       one.className = 'chunk';
       for (let i=0;i<30;i++) {
@@ -404,24 +450,37 @@
         phrase.appendChild(grot);
         one.appendChild(phrase);
       }
-      const two = one.cloneNode(true);
-      marquee.appendChild(one);
-      marquee.appendChild(two);
+      return one;
     }
-    buildMarquee();
 
-    // Hover anywhere on banner pauses loop; hover on "grotto" also gives affordance
-    marquee.addEventListener('mouseover', (e)=>{
-      marquee.classList.add('paused');
-      if(e.target.classList.contains('grotto')){
-        e.target.classList.add('hover-affordance');
-      }
-    });
-    marquee.addEventListener('mouseout', (e)=>{
-      marquee.classList.remove('paused');
-      if(e.target.classList.contains('grotto')){
-        e.target.classList.remove('hover-affordance');
-      }
+    function makeTopChunk(){
+      const one = document.createElement('div');
+      one.className = 'chunk';
+      const phrase = document.createElement('span');
+      phrase.className = 'phrase';
+      phrase.textContent = 'Limited stock available — order today — free delivery in Berkeley';
+      one.appendChild(phrase);
+      return one;
+    }
+
+    buildMarquee(marqueeBottom, makeBottomChunk);
+    buildMarquee(marqueeTop, makeTopChunk);
+
+    /* ================= Marquee interactions ================= */
+    [marqueeTop, marqueeBottom].forEach(mq => {
+      if(!mq) return;
+      mq.addEventListener('mouseover', (e)=>{
+        mq.classList.add('paused');
+        if(e.target.classList.contains('grotto')){
+          e.target.classList.add('hover-affordance');
+        }
+      });
+      mq.addEventListener('mouseout', (e)=>{
+        mq.classList.remove('paused');
+        if(e.target.classList.contains('grotto')){
+          e.target.classList.remove('hover-affordance');
+        }
+      });
     });
 
     /* ================= Mode toggle via clicking any "grotto" word ================= */
@@ -460,11 +519,13 @@
       });
     }
 
-    marquee.addEventListener('click', (e)=>{
-      if(e.target.classList.contains('grotto')){
-        toggleMode();
-      }
-    });
+    if(marqueeBottom){
+      marqueeBottom.addEventListener('click', (e)=>{
+        if(e.target.classList.contains('grotto')){
+          toggleMode();
+        }
+      });
+    }
 
     document.addEventListener('keydown', (e)=>{
       if(e.key.toLowerCase()==='g'){
