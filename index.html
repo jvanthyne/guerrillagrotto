@@ -78,10 +78,58 @@
     /* Plus targets turn red when overlapped */
     .plus-hit.ok{ color: #d00; }
 
-    /* ====== Custom PLUS cursor (mix-blend-difference to invert underlay) ====== */
-    .cursor-plus{ position: fixed; left:0; top:0; width:0; height:0; z-index: 1000; pointer-events: none; mix-blend-mode: difference; }
-    .cursor-plus::before, .cursor-plus::after{ content:""; position:absolute; left:0; top:0; border: var(--cursor-stroke) solid var(--fg); width: calc(var(--plus-size)*2); height: 0; transform: translate(-50%, -50%); }
-    .cursor-plus::after{ width:0; height: calc(var(--plus-size)*2); }
+    /* ====== Custom PLUS cursor (FIXED FOR WHITE BACKGROUND) ====== */
+    .cursor-plus{
+      position: fixed;
+      left:0;
+      top:0;
+      width:0;
+      height:0;
+      z-index: 1000;
+      pointer-events: none;
+      /* no blend mode: always visible; add subtle shadow against bg */
+      filter: drop-shadow(0 0 1px var(--bg));
+    }
+    .cursor-plus::before, .cursor-plus::after{
+      content:"";
+      position:absolute;
+      left:0;
+      top:0;
+      border: var(--cursor-stroke) solid currentColor;
+      width: calc(var(--plus-size)*2);
+      height: 0;
+      transform: translate(-50%, -50%);
+    }
+    .cursor-plus::after{
+      width:0;
+      height: calc(var(--plus-size)*2);
+    }
+
+    /* ====== SHOP BUTTON (left plus) highlighting ====== */
+    /* make it read as an interactive, slightly puzzling button in default mode */
+    body:not(.inverted) #leftPlus{
+      stroke:#ff3333;
+      color:#ff3333;
+      filter: drop-shadow(0 0 4px rgba(255,0,0,0.9));
+      animation: shopPulse 1.4s ease-in-out infinite alternate;
+    }
+
+    @keyframes shopPulse{
+      0%{
+        filter: drop-shadow(0 0 2px rgba(255,0,0,0.6));
+      }
+      100%{
+        filter: drop-shadow(0 0 8px rgba(255,0,0,1));
+      }
+    }
+
+    /* when in guerrilla (inverted) mode, let it blend back in */
+    body.inverted #leftPlus{
+      stroke: currentColor;
+      color: currentColor;
+      filter:none;
+      animation:none;
+    }
   </style>
 </head>
 <body>
@@ -115,14 +163,14 @@
           </textPath>
         </text>
 
-        <!-- Larger plus signs INSIDE circles (same thin stroke). Slightly toward center, still lower-right quadrant. -->
+        <!-- Larger plus signs INSIDE circles -->
         <!-- RIGHT (static) target -->
         <g id="rightPlus" class="plus-hit" transform="translate(573.33, 340)">
           <line x1="-24" y1="0" x2="24" y2="0" />
           <line x1="0" y1="-24" x2="0" y2="24" />
         </g>
 
-        <!-- LEFT (draggable / shop link) target -->
+        <!-- LEFT (shop link in normal mode, draggable in guerrilla mode) -->
         <g id="leftPlus" class="plus-hit" transform="translate(306.67, 340)">
           <line x1="-24" y1="0" x2="24" y2="0" />
           <line x1="0" y1="-24" x2="0" y2="24" />
