@@ -137,6 +137,8 @@
       overflow:hidden;
       opacity:0.7;
       transition: opacity .15s ease, transform .15s ease;
+      background:none;
+      padding:0;
     }
 
     .thumb img{
@@ -192,7 +194,7 @@
 
     .product-description{
       margin: 0 0 12px 0;
-      max-width: 32ch;
+      max-width: 34ch;
     }
 
     .product-notes{
@@ -256,7 +258,7 @@
       border-color: currentColor;
     }
 
-    /* ====== Custom PLUS cursor (same as index) ====== */
+    /* ====== Custom PLUS cursor (FIXED FOR SHOP PAGE) ====== */
     .cursor-plus{
       position: fixed;
       left:0;
@@ -265,7 +267,8 @@
       height:0;
       z-index: 1000;
       pointer-events: none;
-      mix-blend-mode: difference;
+      /* no blend mode so it stays visible on both black + white */
+      filter: drop-shadow(0 0 1px var(--bg));
     }
     .cursor-plus::before,
     .cursor-plus::after{
@@ -273,7 +276,7 @@
       position:absolute;
       left:0;
       top:0;
-      border: var(--cursor-stroke) solid var(--fg);
+      border: var(--cursor-stroke) solid currentColor;
       width: calc(var(--plus-size)*2);
       height: 0;
       transform: translate(-50%, -50%);
@@ -308,7 +311,7 @@
             />
           </div>
 
-          <!-- Aux images 002–006 -->
+          <!-- Aux images 002–005 (006 removed) -->
           <div class="thumb-strip" aria-label="Additional views of Issue 001">
             <button class="thumb is-active" data-full="ggproductimage001.png" aria-label="Main cover">
               <img src="ggproductimage001.png" alt="Issue 001 – main cover" />
@@ -325,35 +328,36 @@
             <button class="thumb" data-full="ggproductimage005.png" aria-label="Alternate view 4">
               <img src="ggproductimage005.png" alt="Issue 001 – view 5" />
             </button>
-            <button class="thumb" data-full="ggproductimage006.png" aria-label="Alternate view 5">
-              <img src="ggproductimage006.png" alt="Issue 001 – view 6" />
-            </button>
           </div>
         </div>
 
-        <!-- Right: copy + fake shop meta -->
+        <!-- Right: copy + meta -->
         <aside class="product-meta">
           <div class="product-header">
             <h1 id="product-title" class="product-title">
               <em>Issue 001, (berkeley, ca)</em>
             </h1>
-            <p class="product-location">guerrillagrotto.space — printed ephemera</p>
-            <p class="product-meta-small">FIRST ISSUE / LIMITED RUN</p>
+            <p class="product-location">zine + stainless steel cup</p>
+            <p class="product-meta-small">FIRST ISSUE / LIMITED RUN / FIELD KIT</p>
           </div>
 
           <div>
             <p class="product-description">
-              A small-batch printed matter project tracing corners, thresholds,
-              and improvised spaces in and around Berkeley, CA.
+              Issue 001 is a key into a loose matrix of guerrilla furniture
+              on and around the UC Berkeley campus. Benches, tables, ledges,
+              ad-hoc rooms — small interruptions in the usual circulation.
             </p>
             <p class="product-notes">
-              Risograph &amp; laser mix, ~32 pages, monochrome with occasional
-              noise. Numbered by hand. Includes fold-out insert.
+              Each set includes: one printed zine and one stainless steel cup
+              for the beverage of your choice. The zine functions as a map and
+              “key” to locate the pieces; the cup acts as an open invitation to
+              future gatherings and events. Once purchased, you’ll be contacted
+              with additional coordinates.
             </p>
           </div>
 
           <div class="product-footer">
-            <p class="product-price">USD 25.00 — ships from Berkeley, CA</p>
+            <p class="product-price">USD 12.00 — includes zine + cup (ships from Berkeley, CA)</p>
             <div class="product-cta-row">
               <button class="btn" type="button">add to list</button>
               <a class="btn" href="mailto:orders@guerrillagrotto.space?subject=Issue%20001%20order">
@@ -485,4 +489,3 @@
   </script>
 </body>
 </html>
-
