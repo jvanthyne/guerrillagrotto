@@ -47,14 +47,14 @@
     /* ==== Floating bottom marquee ==== */
     .marquee-wrap{
       position: fixed;
-      left: 0; right: 0; bottom: 0; /* bottom of screen */
+      left: 0; right: 0; bottom: 0;
       user-select: none;
-      padding-bottom: 8px; /* float slightly above bottom edge */
+      padding-bottom: 8px;
     }
     .marquee{ 
       display: flex; 
       white-space: nowrap; 
-      gap: var(--phrase-gap); /* large gap between phrases */
+      gap: var(--phrase-gap);
       will-change: transform;
       animation: scroll 18s linear infinite;
       font-size: var(--text-size);
@@ -65,6 +65,12 @@
     .marquee .chunk{ display:flex; gap: var(--phrase-gap); }
     .phrase{ pointer-events:auto; }
     .phrase .grotto{ pointer-events:auto; transition: filter .15s ease; }
+
+    /* make "grotto" red */
+    .marquee .grotto{
+      color:#ff3333;
+    }
+
     .marquee.paused{ animation-play-state: paused; }
 
     /* Hover affordance: slightly darker or lighter */
@@ -78,7 +84,7 @@
     /* Plus targets turn red when overlapped */
     .plus-hit.ok{ color: #d00; }
 
-    /* ====== Custom PLUS cursor (FIXED FOR WHITE BACKGROUND) ====== */
+    /* ====== Custom PLUS cursor (fixed for white background) ====== */
     .cursor-plus{
       position: fixed;
       left:0;
@@ -87,7 +93,7 @@
       height:0;
       z-index: 1000;
       pointer-events: none;
-      /* no blend mode: always visible; add subtle shadow against bg */
+      /* no blend mode: always visible; subtle shadow against bg */
       filter: drop-shadow(0 0 1px var(--bg));
     }
     .cursor-plus::before, .cursor-plus::after{
@@ -105,15 +111,14 @@
       height: calc(var(--plus-size)*2);
     }
 
-    /* ====== SHOP BUTTON (left plus) highlighting ====== */
-    /* make it read as an interactive, slightly puzzling button in default mode */
-    body:not(.inverted) #leftPlus{
+    /* ====== SHOP BUTTON (left plus) highlighting – both modes ====== */
+    #leftPlus{
       stroke:#ff3333;
       color:#ff3333;
       filter: drop-shadow(0 0 4px rgba(255,0,0,0.9));
       animation: shopPulse 1.4s ease-in-out infinite alternate;
+      cursor:none;
     }
-
     @keyframes shopPulse{
       0%{
         filter: drop-shadow(0 0 2px rgba(255,0,0,0.6));
@@ -122,13 +127,15 @@
         filter: drop-shadow(0 0 8px rgba(255,0,0,1));
       }
     }
+    /* extra feedback when cursor is over the hit area */
+    #leftPlus.hovered{
+      animation-duration: 0.7s;
+      filter: drop-shadow(0 0 12px rgba(255,0,0,1));
+    }
 
-    /* when in guerrilla (inverted) mode, let it blend back in */
-    body.inverted #leftPlus{
-      stroke: currentColor;
-      color: currentColor;
-      filter:none;
-      animation:none;
+    /* Rotating issue text in right circle: make red */
+    #issue{
+      fill:#ff3333;
     }
   </style>
 </head>
@@ -156,22 +163,23 @@
         <circle id="rightCircle" cx="533.33" cy="300" r="120" />
 
         <!-- Rotating issue text along interior radius of right circle -->
-        <text id="issue" fill="currentColor" style="font-size: var(--text-size);" letter-spacing="0.08em">
+        <text id="issue" style="font-size: var(--text-size);" letter-spacing="0.08em">
           <textPath id="issuePath" href="#ringPath" startOffset="0%">
-            ISSUE 001 — 12/12
+            ISSUE 001 — 12/18 — ISSUE 001 — 12/18 — ISSUE 001 — 12/18 —
             <animate attributeName="startOffset" from="0%" to="100%" dur="16s" repeatCount="indefinite" />
           </textPath>
         </text>
 
-        <!-- Larger plus signs INSIDE circles -->
         <!-- RIGHT (static) target -->
         <g id="rightPlus" class="plus-hit" transform="translate(573.33, 340)">
           <line x1="-24" y1="0" x2="24" y2="0" />
           <line x1="0" y1="-24" x2="0" y2="24" />
         </g>
 
-        <!-- LEFT (shop link in normal mode, draggable in guerrilla mode) -->
+        <!-- LEFT (shop link + draggable in guerrilla mode) -->
         <g id="leftPlus" class="plus-hit" transform="translate(306.67, 340)">
+          <!-- bigger invisible hit area to make clicking easier -->
+          <circle r="40" fill="transparent" />
           <line x1="-24" y1="0" x2="24" y2="0" />
           <line x1="0" y1="-24" x2="0" y2="24" />
         </g>
@@ -281,7 +289,11 @@
     }
 
     let dragging = false;
-    function startDrag(evt){ if(!guerrillaMode) return; dragging = true; evt.preventDefault(); }
+    function startDrag(evt){
+      if(!guerrillaMode) return;
+      dragging = true;
+      evt.preventDefault();
+    }
     function endDrag(){ dragging = false; }
     function onDrag(evt){
       if(!dragging || !guerrillaMode) return; 
@@ -315,11 +327,19 @@
       if(overlapReady){ window.location.href = 'secret.html'; }
     });
 
-    // Left plus = shop link on GROTTO (non-inverted) page
+    // Left plus = shop link in BOTH modes
     leftPlus.addEventListener('click', (e)=>{
-      if(!guerrillaMode){
-        window.location.href = 'shop.html';
-      }
+      // prevent drag-click from also firing secret logic
+      if(dragging) return;
+      window.location.href = 'shop.html';
+    });
+
+    // hover feedback when cursor overlaps hit area
+    leftPlus.addEventListener('mouseenter', ()=>{
+      leftPlus.classList.add('hovered');
+    });
+    leftPlus.addEventListener('mouseleave', ()=>{
+      leftPlus.classList.remove('hovered');
     });
 
     /* ================= Accessibility: keyboard fallback ================= */
