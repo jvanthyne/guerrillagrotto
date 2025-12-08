@@ -5,120 +5,167 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>shop — guerrillagrotto.space</title>
 
-  <!-- Favicon: empty circle with a plus inside (same as index) -->
+  <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href='data:image/svg+xml;utf8,
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-      <circle cx="32" cy="32" r="27" fill="none" stroke="black" stroke-width="4"/>
-      <path d="M32 16v32M16 32h32" stroke="black" stroke-width="4" fill="none" stroke-linecap="square"/>
-    </svg>' />
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+    <circle cx="32" cy="32" r="27" fill="none" stroke="black" stroke-width="4"/>
+    <path d="M32 16v32M16 32h32" stroke="black" stroke-width="4" fill="none" stroke-linecap="square"/>
+  </svg>' />
 
   <style>
     :root{
-      --bg: #000;          /* base background */
-      --fg: #fff;          /* base foreground (text + lines) */
+      --bg: #000;
+      --fg: #fff;
       --muted: #999;
-      --stroke: 1px;       /* global stroke width */
-      --cursor-stroke: 1.6px; /* custom cursor stroke */
-      --plus-size: 16px;       /* custom cursor plus arm length */
-      --ui-scale: 78vmin;  /* size of the main framed UI */
-      --phrase-gap: 12ch;  /* spacing between repeated phrases */
-      --hover-delta: 18%;  /* how much lighter/darker on hover */
-      --text-size: 12px;   /* unified size for banner + interior text */
+      --stroke: 1px;
+      --cursor-stroke: 1.6px;
+      --plus-size: 16px;
+      --ui-scale: 78vmin;
+      --phrase-gap: 12ch;
+      --hover-delta: 18%;
+      --text-size: 12px;
     }
 
-    /* Inverted ("Guerrilla") mode for this page only */
-    body.inverted{
-      --bg:#fff;
-      --fg:#000;
-    }
+    html, body { height: 100%; }
+    * { box-sizing: border-box; }
 
-    /* Base reset */
-    html,body{height:100%;}
-    *{box-sizing:border-box}
     body{
       margin:0;
       background:var(--bg);
       color:var(--fg);
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      cursor: none; /* hide default cursor on body */
-      overflow:hidden; /* desktop default; mobile overrides below */
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Courier New", monospace;
+      cursor:none;
+      overflow:auto; /* allow scrolling on small screens */
+      position:relative;
     }
-    /* Ensure no default cursor anywhere */
+
     body *{ cursor:none; }
 
-    /* ==== Floating marquees ==== */
-    .marquee-wrap{
-      position: fixed;
-      left: 0; right: 0;
-      user-select: none;
-      z-index: 20;
+    /* ===== custom cursor ===== */
+    .cursor-plus{
+      position:fixed;
+      left:0;
+      top:0;
+      width:0;
+      height:0;
+      z-index:1000;
+      pointer-events:none;
+      filter: drop-shadow(0 0 1px var(--bg));
     }
-    .marquee-wrap.bottom{
-      bottom: 0;
-      padding-bottom: 8px;
+    .cursor-plus::before,
+    .cursor-plus::after{
+      content:"";
+      position:absolute;
+      left:0;
+      top:0;
+      border: var(--cursor-stroke) solid currentColor;
+      transform:translate(-50%,-50%);
+    }
+    .cursor-plus::before{
+      width: calc(var(--plus-size)*2);
+      height:0;
+    }
+    .cursor-plus::after{
+      width:0;
+      height: calc(var(--plus-size)*2);
+    }
+
+    /* ===== nav ===== */
+    .site-nav{
+      position:fixed;
+      top:40px;
+      left:12px;
+      z-index:30;
+      font-size:var(--text-size);
+    }
+    .site-nav a{
+      color:inherit;
+      text-decoration:none;
+      border-bottom: var(--stroke) solid transparent;
+      padding-bottom:1px;
+    }
+    .site-nav a:hover{
+      border-color: currentColor;
+    }
+
+    /* ===== marquees ===== */
+    .marquee-wrap{
+      position:fixed;
+      left:0; right:0;
+      user-select:none;
+      z-index:20;
     }
     .marquee-wrap.top{
-      top: 0;
-      padding-top: 8px;
+      top:0;
+      padding-top:8px;
+    }
+    .marquee-wrap.bottom{
+      bottom:0;
+      padding-bottom:8px;
     }
 
-    .marquee{ 
-      display: flex; 
-      white-space: nowrap; 
-      gap: var(--phrase-gap);
-      will-change: transform;
-      animation: scroll 18s linear infinite;
-      font-size: var(--text-size);
-      letter-spacing: 0.02em;
-    }
-    @keyframes scroll{ from{transform: translateX(0);} to{transform: translateX(-50%);} }
-
-    .marquee .chunk{ display:flex; gap: var(--phrase-gap); }
-    .phrase{ pointer-events:auto; }
-    .phrase .grotto{ pointer-events:auto; transition: filter .15s ease; }
-    .marquee.paused{ animation-play-state: paused; }
-
-    /* Top marquee scrolls opposite direction */
-    .marquee-wrap.top .marquee{
-      animation-direction: reverse;
-    }
-
-    /* Hover affordance: slightly darker or lighter */
-    .hover-affordance{ filter: brightness(calc(100% - var(--hover-delta))); }
-    body.inverted .hover-affordance{ filter: brightness(calc(100% + var(--hover-delta))); }
-
-    /* ==== Centered product frame ==== */
-    .stage{
-      position:absolute;
-      inset:0;
-      display:grid;
-      place-items:center;
-      padding: 24px;
-    }
-    .frame{
-      width: min(var(--ui-scale), 92vw);
-      max-height: 72vh;
-      aspect-ratio: 4 / 3;
-      border: var(--stroke) solid currentColor;
+    .marquee{
       display:flex;
-      padding: 24px;
-      background: transparent;
+      white-space:nowrap;
+      gap:var(--phrase-gap);
+      will-change:transform;
+      animation:scroll 18s linear infinite;
+      font-size:var(--text-size);
+      letter-spacing:0.02em;
+    }
+    .marquee .chunk{
+      display:flex;
+      gap:var(--phrase-gap);
+    }
+    .phrase{ pointer-events:auto; }
+
+    .marquee.paused{ animation-play-state:paused; }
+
+    @keyframes scroll{
+      from{ transform:translateX(0); }
+      to{ transform:translateX(-50%); }
+    }
+
+    /* top goes opposite direction */
+    .marquee-wrap.top .marquee{
+      animation-direction:reverse;
+    }
+
+    /* ===== main frame ===== */
+    .stage{
+      position:relative;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:72px 16px 64px; /* leave room for marquees + nav */
+      z-index:10;
+    }
+
+    .frame{
+      width:min(var(--ui-scale), 92vw);
+      border: var(--stroke) solid currentColor;
+      padding:24px;
+      aspect-ratio:4/3;
+      max-height:72vh;
+      display:flex;
+      background:transparent;
     }
 
     .product-layout{
       display:flex;
-      gap: 24px;
+      gap:24px;
       width:100%;
       height:100%;
     }
 
-    /* Left: images */
+    /* left: images */
     .product-media{
-      flex: 3;
+      flex:3;
       display:flex;
       flex-direction:column;
-      gap: 8px;
-      min-width: 0;
+      gap:8px;
+      min-width:0;
     }
 
     .product-image-main-wrap{
@@ -140,57 +187,54 @@
     .thumb-strip{
       display:flex;
       flex-wrap:wrap;
-      gap: 6px;
-      margin-top: 4px;
+      gap:6px;
+      margin-top:4px;
     }
 
     .thumb{
       border: var(--stroke) solid currentColor;
       width: calc(20% - 4px);
-      aspect-ratio: 4 / 3;
+      aspect-ratio:4/3;
       overflow:hidden;
       opacity:0.7;
       transition: opacity .15s ease, transform .15s ease;
       background:none;
       padding:0;
     }
-
     .thumb img{
       width:100%;
       height:100%;
       object-fit:cover;
       display:block;
     }
-
     .thumb:hover{
       opacity:1;
-      transform: translateY(-1px);
+      transform:translateY(-1px);
     }
-
     .thumb.is-active{
       opacity:1;
     }
 
-    /* Right: text + simple “shop” meta */
+    /* right: text */
     .product-meta{
-      flex: 2;
+      flex:2;
       display:flex;
       flex-direction:column;
       justify-content:space-between;
-      font-size: var(--text-size);
+      font-size:var(--text-size);
       line-height:1.5;
       min-width:0;
     }
 
     .product-header{
-      margin-bottom: 16px;
+      margin-bottom:16px;
     }
 
     .product-title{
       margin:0 0 6px 0;
       font-weight:400;
       font-style:italic;
-      font-size: 14px;
+      font-size:14px;
     }
 
     .product-location{
@@ -203,12 +247,12 @@
       color:var(--muted);
       letter-spacing:0.08em;
       text-transform:uppercase;
-      font-size: 10px;
+      font-size:10px;
     }
 
     .product-description{
-      margin: 0 0 12px 0;
-      max-width: 34ch;
+      margin:0 0 12px 0;
+      max-width:34ch;
     }
 
     .product-notes{
@@ -219,11 +263,12 @@
       display:flex;
       flex-direction:column;
       gap:8px;
+      margin-top:16px;
     }
 
     .product-price{
       margin:0;
-      font-size: 13px;
+      font-size:13px;
     }
 
     .product-cta-row{
@@ -234,8 +279,8 @@
 
     .btn{
       border: var(--stroke) solid currentColor;
-      padding: 6px 10px;
-      font-size: var(--text-size);
+      padding:6px 10px;
+      font-size:var(--text-size);
       background:none;
       color:inherit;
       text-transform:uppercase;
@@ -244,27 +289,210 @@
       display:inline-flex;
       align-items:center;
       justify-content:center;
-      min-width: 140px;
+      min-width:140px;
     }
 
     .btn:hover{
       filter: brightness(calc(100% - var(--hover-delta)));
     }
-    body.inverted .btn:hover{
-      filter: brightness(calc(100% + var(--hover-delta)));
+
+    /* ===== mobile tweaks ===== */
+    @media (max-width: 768px){
+      .frame{
+        width:100%;
+        max-height:none;
+        height:auto;
+        padding:16px;
+      }
+      .product-layout{
+        flex-direction:column;
+        height:auto;
+      }
+      .product-meta{
+        margin-top:12px;
+      }
+      .site-nav{
+        top:52px;
+        left:16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- cursor -->
+  <div id="cursor" class="cursor-plus" aria-hidden="true"></div>
+
+  <!-- back nav -->
+  <div class="site-nav">
+    <a href="index.html">◀ back to grotto</a>
+  </div>
+
+  <!-- top marquee -->
+  <div class="marquee-wrap top">
+    <div id="marqueeTop" class="marquee" aria-hidden="true"></div>
+  </div>
+
+  <!-- main product area -->
+  <main class="stage">
+    <section class="frame" aria-labelledby="product-title">
+      <div class="product-layout">
+        <!-- media -->
+        <div class="product-media">
+          <div class="product-image-main-wrap">
+            <img
+              id="productMain"
+              class="product-image-main"
+              src="ggproductimage001.png"
+              alt="Issue 001 cover — guerrilla grotto"
+            />
+          </div>
+
+          <div class="thumb-strip" aria-label="Additional views of Issue 001">
+            <button class="thumb is-active" data-full="ggproductimage001.png" aria-label="Main cover">
+              <img src="ggproductimage001.png" alt="Issue 001 – main cover" />
+            </button>
+            <button class="thumb" data-full="ggproductimage002.png" aria-label="Alternate view 1">
+              <img src="ggproductimage002.png" alt="Issue 001 – view 2" />
+            </button>
+            <button class="thumb" data-full="ggproductimage003.png" aria-label="Alternate view 2">
+              <img src="ggproductimage003.png" alt="Issue 001 – view 3" />
+            </button>
+            <button class="thumb" data-full="ggproductimage004.png" aria-label="Alternate view 3">
+              <img src="ggproductimage004.png" alt="Issue 001 – view 4" />
+            </button>
+            <button class="thumb" data-full="ggproductimage005.png" aria-label="Alternate view 4">
+              <img src="ggproductimage005.png" alt="Issue 001 – view 5" />
+            </button>
+          </div>
+        </div>
+
+        <!-- meta -->
+        <aside class="product-meta">
+          <div>
+            <div class="product-header">
+              <h1 id="product-title" class="product-title">
+                <em>Issue 001</em>
+              </h1>
+              <p class="product-location">zine + stainless steel cup</p>
+              <p class="product-meta-small">FIRST ISSUE / GUERRILLA BUILDS / KEYS</p>
+            </div>
+
+            <p class="product-description">
+              Issue 001 is a key into a matrix of guerrilla furniture on and
+              around the UC Berkeley campus. Places to connect — with place
+              and with people — each with a different goal, under the same
+              loose guidelines: done with purpose, without permission, and
+              with what is available.
+            </p>
+
+            <p class="product-notes">
+              Each set includes one printed zine with the locations of all
+              current active builds and one stainless steel cup for the
+              beverage of your choice, from coffee to wine. The zine acts as
+              a map and “key” to locate the pieces; the cup is an open
+              invitation to future gatherings and events. Once purchased,
+              you’ll be added to a mailing list.
+            </p>
+          </div>
+
+          <div class="product-footer">
+            <p class="product-price">
+              USD 16.00 — includes zine + cup + mailing list (hand delivered in Berkeley, CA)
+            </p>
+
+            <div class="product-cta-row">
+              <a
+                class="btn"
+                href="mailto:orders@guerrillagrotto.space?subject=Issue%20001%20order&body=Thanks%20for%20your%20interest%20in%20Issue%20001%2C%20drop%20your%20name%20and%20we%27ll%20respond%20with%20payment%20and%20drop%2Doff%20information.%0A%0AThanks."
+              >
+                email to purchase
+              </a>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <!-- bottom marquee -->
+  <div class="marquee-wrap bottom">
+    <div id="marqueeBottom" class="marquee" aria-hidden="true"></div>
+  </div>
+
+  <script>
+    /* cursor */
+    const cursor = document.getElementById('cursor');
+    function setCursorPos(e){
+      cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+    }
+    window.addEventListener('mousemove', setCursorPos, {passive:true});
+    window.addEventListener('touchmove', e => {
+      if(e.touches && e.touches[0]){
+        setCursorPos({clientX:e.touches[0].clientX, clientY:e.touches[0].clientY});
+      }
+    }, {passive:true});
+
+    /* marquees */
+    const marqueeTop = document.getElementById('marqueeTop');
+    const marqueeBottom = document.getElementById('marqueeBottom');
+
+    function buildMarquee(target, makeChunk){
+      if(!target) return;
+      const one = makeChunk();
+      const two = one.cloneNode(true);
+      target.appendChild(one);
+      target.appendChild(two);
     }
 
-    /* “back home” link – slightly lower so it clears top marquee */
-    .site-nav{
-      position:fixed;
-      top:36px;
-      left:12px;
-      z-index:30;
-      font-size: var(--text-size);
+    function makeTopChunk(){
+      const one = document.createElement('div');
+      one.className = 'chunk';
+      const phrase = document.createElement('span');
+      phrase.className = 'phrase';
+      phrase.textContent = 'Limited stock available — order today — free delivery in Berkeley';
+      one.appendChild(phrase);
+      return one;
     }
-    .site-nav a{
-      color:inherit;
-      text-decoration:none;
-      border-bottom: var(--stroke) solid transparent;
 
-    
+    function makeBottomChunk(){
+      const one = document.createElement('div');
+      one.className = 'chunk';
+      for(let i=0;i<30;i++){
+        const phrase = document.createElement('span');
+        phrase.className = 'phrase';
+        phrase.appendChild(document.createTextNode('Welcome to the '));
+        const grot = document.createElement('span');
+        grot.className = 'grotto';
+        grot.textContent = 'grotto';
+        phrase.appendChild(grot);
+        one.appendChild(phrase);
+      }
+      return one;
+    }
+
+    buildMarquee(marqueeTop, makeTopChunk);
+    buildMarquee(marqueeBottom, makeBottomChunk);
+
+    [marqueeTop, marqueeBottom].forEach(mq => {
+      if(!mq) return;
+      mq.addEventListener('mouseover', ()=> mq.classList.add('paused'));
+      mq.addEventListener('mouseout', ()=> mq.classList.remove('paused'));
+    });
+
+    /* thumbs */
+    const mainImg = document.getElementById('productMain');
+    const thumbs = document.querySelectorAll('.thumb');
+
+    thumbs.forEach(btn => {
+      btn.addEventListener('click', ()=>{
+        const full = btn.getAttribute('data-full');
+        if(full){
+          mainImg.src = full;
+        }
+        thumbs.forEach(t => t.classList.remove('is-active'));
+        btn.classList.add('is-active');
+      });
+    });
+  </script>
+</body>
+</html>
