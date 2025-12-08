@@ -134,6 +134,19 @@
       color:var(--fg);
     }
 
+    .marquee .chunk{
+      display:flex;
+      gap:var(--phrase-gap); /* restore original phrase spacing */
+    }
+
+    .phrase{
+      pointer-events:auto;
+    }
+
+    .phrase .grotto{
+      pointer-events:auto;
+    }
+
     @keyframes scroll{
       from{transform:translateX(0);}
       to{transform:translateX(-50%);}
@@ -211,22 +224,30 @@ function updateCursor(e){
 }
 window.addEventListener("mousemove", updateCursor);
 
-/* ========== BUILD MARQUEE ========== */
+/* ========== BUILD MARQUEE (original spacing) ========== */
 const marquee = document.getElementById("marquee");
 
 function buildMarquee(){
-  const chunk = document.createElement("div");
-  chunk.className = "chunk";
+  const one = document.createElement("div");
+  one.className = "chunk";
 
   for(let i=0; i<30; i++){
     const phrase = document.createElement("span");
-    phrase.textContent = "Welcome to the grotto";
-    chunk.appendChild(phrase);
+    phrase.className = "phrase";
+
+    phrase.appendChild(document.createTextNode("Welcome to the "));
+
+    const grot = document.createElement("span");
+    grot.className = "grotto";
+    grot.textContent = "grotto";
+
+    phrase.appendChild(grot);
+    one.appendChild(phrase);
   }
 
-  const clone = chunk.cloneNode(true);
-  marquee.appendChild(chunk);
-  marquee.appendChild(clone);
+  const two = one.cloneNode(true);
+  marquee.appendChild(one);
+  marquee.appendChild(two);
 }
 buildMarquee();
 
@@ -239,8 +260,7 @@ document.getElementById("leftPlus").addEventListener("click", ()=>{
   window.location.href = "shop.html";
 });
 
-/* ========== DRAG LOGIC REMOVED (NO GUERRILLA MODE) ========== */
-/* Nothing toggles the background or text now. */
+/* No guerrilla/invert mode, no background change. */
 
 </script>
 
