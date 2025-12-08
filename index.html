@@ -4,48 +4,41 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>guerrillagrotto.space</title>
-  <!-- Favicon: empty circle with a plus inside -->
+
+  <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href='data:image/svg+xml;utf8,
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-      <circle cx="32" cy="32" r="27" fill="none" stroke="black" stroke-width="4"/>
-      <path d="M32 16v32M16 32h32" stroke="black" stroke-width="4" fill="none" stroke-linecap="square"/>
-    </svg>' />
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+    <circle cx="32" cy="32" r="27" fill="none" stroke="black" stroke-width="4"/>
+    <path d="M32 16v32M16 32h32" stroke="black" stroke-width="4" fill="none" stroke-linecap="square"/>
+  </svg>' />
+
   <style>
     :root{
-      --bg: #000;          /* fallback base background behind video */
-      --fg: #fff;          /* base foreground (text + lines) */
+      --bg: #000;          
+      --fg: #fff;          
       --muted: #999;
-      --stroke: 1px;       /* global stroke width */
-      --cursor-stroke: 1.6px; /* custom cursor stroke */
-      --plus-size: 16px;       /* custom cursor plus arm length */
-      --ui-scale: 78vmin;  /* size of the main framed SVG */
-      --phrase-gap: 12ch;  /* large spacing between repeated phrases */
-      --hover-delta: 18%;  /* how much lighter/darker on hover */
-      --text-size: 12px;   /* unified size for banner + interior text */
+      --stroke: 1px;       
+      --cursor-stroke: 1.6px; 
+      --plus-size: 16px;       
+      --ui-scale: 78vmin;  
+      --phrase-gap: 12ch;  
+      --text-size: 12px;   
     }
 
-    /* Inverted ("Guerrilla") mode */
-    body.inverted{
-      --bg:#fff;
-      --fg:#000;
-    }
-
-    /* Base reset */
     html,body{height:100%;}
     *{box-sizing:border-box}
+
     body{
       margin:0;
-      background:var(--bg); /* video sits on top at 40% opacity */
+      background:var(--bg);
       color:var(--fg);
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      cursor: none; /* hide default cursor on body */
-      overflow:hidden; /* keep the layout tight */
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      cursor:none;
+      overflow:hidden;
       position:relative;
     }
-    /* Ensure no default cursor anywhere */
-    body *{ cursor:none; }
 
-    /* ==== Background video ==== */
+    /* ========= BACKGROUND VIDEO ========= */
     #bgVideo{
       position:fixed;
       inset:0;
@@ -57,299 +50,199 @@
       pointer-events:none;
     }
 
-    /* ==== Floating bottom marquee ==== */
-    .marquee-wrap{
-      position: fixed;
-      left: 0; right: 0; bottom: 0;
-      user-select: none;
-      padding-bottom: 8px;
-      z-index: 10;
-    }
-    .marquee{ 
-      display: flex; 
-      white-space: nowrap; 
-      gap: var(--phrase-gap);
-      will-change: transform;
-      animation: scroll 18s linear infinite;
-      font-size: var(--text-size);
-      letter-spacing: 0.02em;
-    }
-    @keyframes scroll{ from{transform: translateX(0);} to{transform: translateX(-50%);} }
-
-    .marquee .chunk{ display:flex; gap: var(--phrase-gap); }
-    .phrase{ pointer-events:auto; }
-    .phrase .grotto{ pointer-events:auto; transition: filter .15s ease; }
-
-    /* make "grotto" red */
-    .marquee .grotto{
-      color:#ff3333;
-    }
-
-    .marquee.paused{ animation-play-state: paused; }
-
-    /* Hover affordance: slightly darker or lighter */
-    .hover-affordance{ filter: brightness(calc(100% - var(--hover-delta))); }
-    body.inverted .hover-affordance{ filter: brightness(calc(100% + var(--hover-delta))); }
-
-    /* ==== Centered framed composition (SVG scales evenly) ==== */
-    .stage{ 
-      position: absolute; 
-      inset: 0; 
-      display: grid; 
-      place-items: center; 
-      z-index: 5;
-    }
-    .frame{ 
-      width: min(var(--ui-scale), 92vw); 
-      height: auto; 
-      max-height: 72vh; 
-      aspect-ratio: 4 / 3; 
-      display: block; 
-    }
-
-    /* Plus targets turn red when overlapped */
-    .plus-hit.ok{ color: #d00; }
-
-    /* ====== Custom PLUS cursor (fixed for video / white background) ====== */
+    /* ========= CUSTOM CURSOR ========= */
     .cursor-plus{
       position: fixed;
       left:0;
       top:0;
       width:0;
       height:0;
-      z-index: 1000;
-      pointer-events: none;
-      /* subtle shadow so it's visible against video/light areas */
+      z-index:1000;
+      pointer-events:none;
       filter: drop-shadow(0 0 1px var(--bg));
     }
-    .cursor-plus::before, .cursor-plus::after{
+    .cursor-plus::before,
+    .cursor-plus::after{
       content:"";
       position:absolute;
-      left:0;
-      top:0;
       border: var(--cursor-stroke) solid currentColor;
+      left:0; top:0;
+      transform:translate(-50%, -50%);
+    }
+    .cursor-plus::before{
       width: calc(var(--plus-size)*2);
-      height: 0;
-      transform: translate(-50%, -50%);
+      height:0;
     }
     .cursor-plus::after{
-      width:0;
       height: calc(var(--plus-size)*2);
+      width:0;
     }
 
-    /* ====== SHOP BUTTON (left plus) – red, no glow, bigger hit area invisible ====== */
+    /* ========= MAIN SVG FRAME ========= */
+    .stage{
+      position:absolute;
+      inset:0;
+      display:grid;
+      place-items:center;
+      z-index:10;
+    }
+
+    .frame{
+      width:min(var(--ui-scale), 92vw);
+      height:auto;
+      max-height:72vh;
+      aspect-ratio:4/3;
+      display:block;
+    }
+
+    /* shop button color */
     #leftPlus{
       stroke:#ff3333;
       color:#ff3333;
     }
 
-    /* Rotating issue text in right circle: make red */
+    /* invisible click area */
+    #leftPlus circle{
+      fill:transparent;
+      stroke:none;
+      pointer-events:auto;
+    }
+
+    /* rotating issue text */
     #issue{
       fill:#ff3333;
     }
+
+    /* ========= BOTTOM MARQUEE ========= */
+    .marquee-wrap{
+      position:fixed;
+      bottom:0;
+      left:0; right:0;
+      padding-bottom:8px;
+      z-index:10;
+      user-select:none;
+    }
+
+    .marquee{ 
+      display:flex; 
+      white-space:nowrap; 
+      gap:var(--phrase-gap);
+      will-change:transform;
+      animation:scroll 18s linear infinite;
+      font-size:var(--text-size);
+      letter-spacing:0.02em;
+      color:var(--fg);
+    }
+
+    @keyframes scroll{
+      from{transform:translateX(0);}
+      to{transform:translateX(-50%);}
+    }
+
+    .marquee.paused{
+      animation-play-state:paused;
+    }
+
   </style>
 </head>
+
 <body>
-  <!-- Background video -->
+
+  <!-- BACKGROUND VIDEO -->
   <video id="bgVideo" autoplay muted loop playsinline>
     <source src="grottobackground.mp4" type="video/mp4" />
   </video>
 
-  <div id="cursor" class="cursor-plus" aria-hidden="true"></div>
+  <!-- CURSOR -->
+  <div id="cursor" class="cursor-plus"></div>
 
-  <!-- Centered SVG frame (rectangle + 2 circles + plus signs) -->
+  <!-- MAIN INTERFACE -->
   <main class="stage">
-    <svg id="ui" class="frame" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg" aria-labelledby="title desc">
-      <title id="title">guerrillagrotto composition</title>
-      <desc id="desc">Rectangle framing two circles. Left circle has draggable plus; right circle has static plus and rotating issue text. Drag allowed in Guerrilla mode. Colors invert when toggling mode.</desc>
+    <svg id="ui" class="frame" viewBox="0 0 800 600">
 
-      <!-- Shared paint -->
       <defs>
-        <!-- text-on-a-circle path (slightly inset so it doesn't touch the line) -->
-        <path id="ringPath" d="M 533.33,300 m -110,0 a 110,110 0 1,1 220,0 a 110,110 0 1,1 -220,0" />
+        <path id="ringPath"
+          d="M 533.33,300 m -110,0 a 110,110 0 1,1 220,0 a 110,110 0 1,1 -220,0" />
       </defs>
 
-      <!-- Frame rectangle (stroke matches circles and pluses) -->
-      <g id="composition" stroke="currentColor" fill="none" stroke-width="var(--stroke)">
-        <rect id="frameRect" x="120" y="120" width="560" height="360" rx="2"/>
+      <g stroke="currentColor" fill="none" stroke-width="var(--stroke)">
+        <rect x="120" y="120" width="560" height="360" rx="2"/>
 
-        <!-- Circles (same size, centered vertically, evenly spaced horizontally) -->
-        <circle id="leftCircle" cx="266.67" cy="300" r="120" />
-        <circle id="rightCircle" cx="533.33" cy="300" r="120" />
+        <circle cx="266.67" cy="300" r="120" />
+        <circle cx="533.33" cy="300" r="120" />
 
-        <!-- Rotating issue text along interior radius of right circle -->
-        <text id="issue" style="font-size: var(--text-size);" letter-spacing="0.08em">
-          <textPath id="issuePath" href="#ringPath" startOffset="0%">
+        <!-- Rotating issue text (ONE INSTANCE) -->
+        <text id="issue" style="font-size:var(--text-size);" letter-spacing="0.08em">
+          <textPath href="#ringPath" startOffset="0%">
             ISSUE 001 — 12/18
-            <animate attributeName="startOffset" from="0%" to="100%" dur="16s" repeatCount="indefinite" />
+            <animate attributeName="startOffset" from="0%" to="100%"
+              dur="16s" repeatCount="indefinite" />
           </textPath>
         </text>
 
-        <!-- RIGHT (static) target -->
-        <g id="rightPlus" class="plus-hit" transform="translate(573.33, 340)">
-          <line x1="-24" y1="0" x2="24" y2="0" />
-          <line x1="0" y1="-24" x2="0" y2="24" />
+        <!-- STATIC RIGHT PLUS -->
+        <g id="rightPlus" transform="translate(573.33, 340)">
+          <line x1="-24" y1="0" x2="24" y2="0"/>
+          <line x1="0" y1="-24" x2="0" y2="24"/>
         </g>
 
-        <!-- LEFT (shop link + draggable in guerrilla mode) -->
-        <g id="leftPlus" class="plus-hit" transform="translate(306.67, 340)">
-          <!-- bigger invisible hit area to make clicking easier (no red circle) -->
-          <circle r="40" fill="transparent" stroke="none" />
-          <line x1="-24" y1="0" x2="24" y2="0" />
-          <line x1="0" y1="-24" x2="0" y2="24" />
+        <!-- SHOP BUTTON (LEFT PLUS) -->
+        <g id="leftPlus" transform="translate(306.67, 340)">
+          <circle r="40"></circle> <!-- invisible big hit area -->
+          <line x1="-24" y1="0" x2="24" y2="0"/>
+          <line x1="0" y1="-24" x2="0" y2="24"/>
         </g>
       </g>
     </svg>
   </main>
 
-  <!-- Endless loop banner (bottom) with interaction on the word "grotto" only -->
+
+  <!-- BOTTOM MARQUEE -->
   <div class="marquee-wrap">
-    <div id="marquee" class="marquee" aria-hidden="true"></div>
+    <div id="marquee" class="marquee"></div>
   </div>
 
-  <script>
-    /* ================= Custom PLUS cursor ================= */
-    const cursor = document.getElementById('cursor');
-    const setCursorPos = (e) => { cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`; };
-    window.addEventListener('mousemove', setCursorPos, {passive:true});
-    window.addEventListener('touchmove', (e)=>{
-      if(e.touches && e.touches[0]) setCursorPos({clientX:e.touches[0].clientX, clientY:e.touches[0].clientY});
-    }, {passive:true});
 
-    /* ================= Marquee builder (endless, bottom) ================= */
-    const marquee = document.getElementById('marquee');
+<script>
+/* ========== CUSTOM CURSOR ========== */
+const cursor = document.getElementById("cursor");
+function updateCursor(e){
+  cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+}
+window.addEventListener("mousemove", updateCursor);
 
-    function buildMarquee(){
-      const one = document.createElement('div'); one.className = 'chunk';
-      for (let i=0;i<30;i++) { // enough to overflow for seamless loop
-        const phrase = document.createElement('span');
-        phrase.className = 'phrase';
-        phrase.appendChild(document.createTextNode('Welcome to the '));
-        const grot = document.createElement('span');
-        grot.textContent = 'grotto';
-        grot.className = 'grotto';
-        phrase.appendChild(grot);
-        one.appendChild(phrase);
-      }
-      const two = one.cloneNode(true);
-      marquee.appendChild(one);
-      marquee.appendChild(two);
-    }
-    buildMarquee();
+/* ========== BUILD MARQUEE ========== */
+const marquee = document.getElementById("marquee");
 
-    // Hover anywhere on banner pauses loop; hover on "grotto" also gives affordance
-    marquee.addEventListener('mouseover', (e)=>{
-      marquee.classList.add('paused');
-      if(e.target.classList.contains('grotto')){
-        e.target.classList.add('hover-affordance');
-      }
-    });
-    marquee.addEventListener('mouseout', (e)=>{
-      marquee.classList.remove('paused');
-      if(e.target.classList.contains('grotto')){
-        e.target.classList.remove('hover-affordance');
-      }
-    });
+function buildMarquee(){
+  const chunk = document.createElement("div");
+  chunk.className = "chunk";
 
-    /* ================= Mode toggle via clicking any "grotto" word ================= */
-    let guerrillaMode = false; // drag only allowed in this mode
-    function randomChar(){
-      const chars = '!<>-_\\/[]{}—=+*^?#________';
-      return chars[Math.floor(Math.random()*chars.length)];
-    }
-    function glitchSwap(node, toText){
-      const from = node.textContent;
-      const max = Math.max(from.length, toText.length);
-      let i=0;
-      const timer = setInterval(()=>{
-        const out = [];
-        for(let k=0;k<max;k++){
-          const targetCh = (k < toText.length) ? toText[k] : '';
-          if(k < i){ out.push(targetCh); }
-          else { out.push(randomChar()); }
-        }
-        node.textContent = out.join('');
-        i++;
-        if(i>max){ clearInterval(timer); node.textContent = toText; }
-      }, 18);
-    }
+  for(let i=0; i<30; i++){
+    const phrase = document.createElement("span");
+    phrase.textContent = "Welcome to the grotto";
+    chunk.appendChild(phrase);
+  }
 
-    function toggleMode(){
-      guerrillaMode = !guerrillaMode;
-      document.body.classList.toggle('inverted', guerrillaMode);
-      // swap all instances of grotto <-> guerrilla grotto with glitch
-      document.querySelectorAll('.grotto').forEach(el=>{
-        const to = guerrillaMode ? 'guerrilla grotto' : 'grotto';
-        glitchSwap(el, to);
-      });
-    }
+  const clone = chunk.cloneNode(true);
+  marquee.appendChild(chunk);
+  marquee.appendChild(clone);
+}
+buildMarquee();
 
-    marquee.addEventListener('click', (e)=>{
-      if(e.target.classList.contains('grotto')){
-        toggleMode();
-      }
-    });
+/* Pause marquee on hover */
+marquee.addEventListener("mouseover", ()=> marquee.classList.add("paused"));
+marquee.addEventListener("mouseout", ()=> marquee.classList.remove("paused"));
 
-    /* ================= Draggable left plus, target overlap detection ================= */
-    const svg = document.getElementById('ui');
-    const leftPlus = document.getElementById('leftPlus');
-    const rightPlus = document.getElementById('rightPlus');
+/* ========== SHOP BUTTON CLICK ========== */
+document.getElementById("leftPlus").addEventListener("click", ()=>{
+  window.location.href = "shop.html";
+});
 
-    function svgPointFromEvent(evt){
-      const pt = svg.createSVGPoint();
-      const ctm = svg.getScreenCTM();
-      const x = (evt.touches?evt.touches[0].clientX:evt.clientX);
-      const y = (evt.touches?evt.touches[0].clientY:evt.clientY);
-      pt.x = x; pt.y = y; return pt.matrixTransform(ctm.inverse());
-    }
+/* ========== DRAG LOGIC REMOVED (NO GUERRILLA MODE) ========== */
+/* Nothing toggles the background or text now. */
 
-    let dragging = false;
-    function startDrag(evt){
-      if(!guerrillaMode) return;
-      dragging = true;
-      evt.preventDefault();
-    }
-    function endDrag(){ dragging = false; }
-    function onDrag(evt){
-      if(!dragging || !guerrillaMode) return; 
-      const p = svgPointFromEvent(evt);
-      leftPlus.setAttribute('transform', `translate(${p.x}, ${p.y})`);
-      checkOverlap();
-    }
+</script>
 
-    leftPlus.addEventListener('mousedown', startDrag);
-    window.addEventListener('mouseup', endDrag);
-    leftPlus.addEventListener('touchstart', startDrag, {passive:false});
-    window.addEventListener('touchend', endDrag);
-    window.addEventListener('mousemove', onDrag);
-    window.addEventListener('touchmove', onDrag, {passive:false});
-
-    function centerOf(g){ const m = g.getCTM(); return { x: m.e, y: m.f }; }
-    function distance(a,b){ const dx=a.x-b.x, dy=a.y-b.y; return Math.hypot(dx,dy); }
-
-    let overlapReady = false;
-    function checkOverlap(){
-      const a = centerOf(leftPlus), b = centerOf(rightPlus);
-      const d = distance(a,b);
-      const threshold = 24; // match larger plus size arms
-      const ok = d < threshold;
-      overlapReady = ok;
-      leftPlus.classList.toggle('ok', ok);
-      rightPlus.classList.toggle('ok', ok);
-    }
-
-    svg.addEventListener('click', (e)=>{
-      if(overlapReady){ window.location.href = 'secret.html'; }
-    });
-
-    // Left plus = shop link in BOTH modes
-    leftPlus.addEventListener('click', (e)=>{
-      if(dragging) return; // ignore click when actively dragging in guerrilla mode
-      window.location.href = 'shop.html';
-    });
-
-    /* ================= Accessibility: keyboard fallback ================= */
-    document.addEventListener('keydown', (e)=>{ if(e.key.toLowerCase()==='g'){ toggleMode(); } });
-  </script>
 </body>
 </html>
