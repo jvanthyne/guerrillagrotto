@@ -26,7 +26,7 @@
       --text-size: 12px;   /* unified size for banner + interior text */
     }
 
-    /* Inverted ("Guerrilla") mode */
+    /* Inverted ("Guerrilla") mode for this page only */
     body.inverted{
       --bg:#fff;
       --fg:#000;
@@ -41,7 +41,7 @@
       color:var(--fg);
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
       cursor: none; /* hide default cursor on body */
-      overflow:hidden; /* keep layout tight like index */
+      overflow:hidden; /* desktop default; mobile overrides below */
     }
     /* Ensure no default cursor anywhere */
     body *{ cursor:none; }
@@ -102,6 +102,7 @@
       border: var(--stroke) solid currentColor;
       display:flex;
       padding: 24px;
+      background: transparent;
     }
 
     .product-layout{
@@ -188,7 +189,7 @@
     .product-title{
       margin:0 0 6px 0;
       font-weight:400;
-      font-style:italic; /* title in italics */
+      font-style:italic;
       font-size: 14px;
     }
 
@@ -243,7 +244,7 @@
       display:inline-flex;
       align-items:center;
       justify-content:center;
-      min-width: 120px;
+      min-width: 140px;
     }
 
     .btn:hover{
@@ -253,7 +254,7 @@
       filter: brightness(calc(100% + var(--hover-delta)));
     }
 
-    /* “back home” link – moved lower to avoid top marquee overlap */
+    /* “back home” link – slightly lower so it clears top marquee */
     .site-nav{
       position:fixed;
       top:36px;
@@ -265,273 +266,5 @@
       color:inherit;
       text-decoration:none;
       border-bottom: var(--stroke) solid transparent;
-      padding-bottom:1px;
-    }
-    .site-nav a:hover{
-      border-color: currentColor;
-    }
 
-    /* ====== Custom PLUS cursor (FIXED FOR SHOP PAGE) ====== */
-    .cursor-plus{
-      position: fixed;
-      left:0;
-      top:0;
-      width:0;
-      height:0;
-      z-index: 1000;
-      pointer-events: none;
-      /* stays visible on both black + white */
-      filter: drop-shadow(0 0 1px var(--bg));
-    }
-    .cursor-plus::before,
-    .cursor-plus::after{
-      content:"";
-      position:absolute;
-      left:0;
-      top:0;
-      border: var(--cursor-stroke) solid currentColor;
-      width: calc(var(--plus-size)*2);
-      height: 0;
-      transform: translate(-50%, -50%);
-    }
-    .cursor-plus::after{
-      width:0;
-      height: calc(var(--plus-size)*2);
-    }
-  </style>
-</head>
-<body>
-  <div id="cursor" class="cursor-plus" aria-hidden="true"></div>
-
-  <!-- Minimal nav: back to index -->
-  <div class="site-nav">
-    <a href="index.html">◀ back to grotto</a>
-  </div>
-
-  <!-- Top marquee -->
-  <div class="marquee-wrap top">
-    <div id="marqueeTop" class="marquee" aria-hidden="true"></div>
-  </div>
-
-  <!-- Centered product composition -->
-  <main class="stage">
-    <section class="frame" aria-labelledby="product-title">
-      <div class="product-layout">
-        <!-- Left: images -->
-        <div class="product-media">
-          <div class="product-image-main-wrap">
-            <!-- Feature image -->
-            <img
-              id="productMain"
-              class="product-image-main"
-              src="ggproductimage001.png"
-              alt="Issue 001 cover — guerrilla grotto"
-            />
-          </div>
-
-          <!-- Aux images 002–005 -->
-          <div class="thumb-strip" aria-label="Additional views of Issue 001">
-            <button class="thumb is-active" data-full="ggproductimage001.png" aria-label="Main cover">
-              <img src="ggproductimage001.png" alt="Issue 001 – main cover" />
-            </button>
-            <button class="thumb" data-full="ggproductimage002.png" aria-label="Alternate view 1">
-              <img src="ggproductimage002.png" alt="Issue 001 – view 2" />
-            </button>
-            <button class="thumb" data-full="ggproductimage003.png" aria-label="Alternate view 2">
-              <img src="ggproductimage003.png" alt="Issue 001 – view 3" />
-            </button>
-            <button class="thumb" data-full="ggproductimage004.png" aria-label="Alternate view 3">
-              <img src="ggproductimage004.png" alt="Issue 001 – view 4" />
-            </button>
-            <button class="thumb" data-full="ggproductimage005.png" aria-label="Alternate view 4">
-              <img src="ggproductimage005.png" alt="Issue 001 – view 5" />
-            </button>
-          </div>
-        </div>
-
-        <!-- Right: copy + meta -->
-        <aside class="product-meta">
-          <div class="product-header">
-            <h1 id="product-title" class="product-title">
-              <em>Issue 001, (berkeley, ca)</em>
-            </h1>
-            <p class="product-location">zine + stainless steel cup</p>
-            <p class="product-meta-small">FIRST ISSUE / LIMITED RUN / FIELD KIT</p>
-          </div>
-
-          <div>
-            <p class="product-description">
-              Issue 001 is a key into a loose matrix of guerrilla furniture
-              on and around the UC Berkeley campus. Benches, tables, ledges,
-              ad-hoc rooms — small interruptions in the usual circulation.
-            </p>
-            <p class="product-notes">
-              Each set includes: one printed zine and one stainless steel cup
-              for the beverage of your choice. The zine functions as a map and
-              “key” to locate the pieces; the cup acts as an open invitation to
-              future gatherings and events. Once purchased, you’ll be contacted
-              with additional coordinates.
-            </p>
-          </div>
-
-          <div class="product-footer">
-            <p class="product-price">USD 12.00 — includes zine + cup (ships from Berkeley, CA)</p>
-
-            <!-- primary CTA -->
-            <div class="product-cta-row">
-              <a
-                class="btn"
-                href="mailto:orders@guerrillagrotto.space?subject=Issue%20001%20order&body=Thanks%20for%20your%20interest%20in%20Issue%20001%2C%20drop%20your%20name%20and%20we%27ll%20respond%20with%20payment%20and%20drop%2Doff%20information%2E%0A%0AThanks."
-              >
-                email to purchase
-              </a>
-            </div>
-          </div>
-        </aside>
-      </div>
-    </section>
-  </main>
-
-  <!-- Bottom marquee -->
-  <div class="marquee-wrap bottom">
-    <div id="marqueeBottom" class="marquee" aria-hidden="true"></div>
-  </div>
-
-  <script>
-    /* ================= Custom PLUS cursor ================= */
-    const cursor = document.getElementById('cursor');
-    const setCursorPos = (e) => {
-      cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
-    };
-    window.addEventListener('mousemove', setCursorPos, {passive:true});
-    window.addEventListener('touchmove', (e)=>{
-      if(e.touches && e.touches[0]){
-        setCursorPos({clientX:e.touches[0].clientX, clientY:e.touches[0].clientY});
-      }
-    }, {passive:true});
-
-    /* ================= Build marquees ================= */
-    const marqueeTop = document.getElementById('marqueeTop');
-    const marqueeBottom = document.getElementById('marqueeBottom');
-
-    function buildMarquee(target, makeChunk){
-      if(!target) return;
-      const one = makeChunk();
-      const two = one.cloneNode(true);
-      target.appendChild(one);
-      target.appendChild(two);
-    }
-
-    function makeBottomChunk(){
-      const one = document.createElement('div');
-      one.className = 'chunk';
-      for (let i=0;i<30;i++) {
-        const phrase = document.createElement('span');
-        phrase.className = 'phrase';
-        phrase.appendChild(document.createTextNode('Welcome to the '));
-        const grot = document.createElement('span');
-        grot.textContent = 'grotto';
-        grot.className = 'grotto';
-        phrase.appendChild(grot);
-        one.appendChild(phrase);
-      }
-      return one;
-    }
-
-    function makeTopChunk(){
-      const one = document.createElement('div');
-      one.className = 'chunk';
-      const phrase = document.createElement('span');
-      phrase.className = 'phrase';
-      phrase.textContent = 'Limited stock available — order today — free delivery in Berkeley';
-      one.appendChild(phrase);
-      return one;
-    }
-
-    buildMarquee(marqueeBottom, makeBottomChunk);
-    buildMarquee(marqueeTop, makeTopChunk);
-
-    /* ================= Marquee interactions ================= */
-    [marqueeTop, marqueeBottom].forEach(mq => {
-      if(!mq) return;
-      mq.addEventListener('mouseover', (e)=>{
-        mq.classList.add('paused');
-        if(e.target.classList.contains('grotto')){
-          e.target.classList.add('hover-affordance');
-        }
-      });
-      mq.addEventListener('mouseout', (e)=>{
-        mq.classList.remove('paused');
-        if(e.target.classList.contains('grotto')){
-          e.target.classList.remove('hover-affordance');
-        }
-      });
-    });
-
-    /* ================= Mode toggle via clicking any "grotto" word ================= */
-    let guerrillaMode = false;
-
-    function randomChar(){
-      const chars = '!<>-_\\/[]{}—=+*^?#________';
-      return chars[Math.floor(Math.random()*chars.length)];
-    }
-    function glitchSwap(node, toText){
-      const from = node.textContent;
-      const max = Math.max(from.length, toText.length);
-      let i=0;
-      const timer = setInterval(()=>{
-        const out = [];
-        for(let k=0;k<max;k++){
-          const targetCh = (k < toText.length) ? toText[k] : '';
-          if(k < i){ out.push(targetCh); }
-          else { out.push(randomChar()); }
-        }
-        node.textContent = out.join('');
-        i++;
-        if(i>max){
-          clearInterval(timer);
-          node.textContent = toText;
-        }
-      }, 18);
-    }
-
-    function toggleMode(){
-      guerrillaMode = !guerrillaMode;
-      document.body.classList.toggle('inverted', guerrillaMode);
-      document.querySelectorAll('.grotto').forEach(el=>{
-        const to = guerrillaMode ? 'guerrilla grotto' : 'grotto';
-        glitchSwap(el, to);
-      });
-    }
-
-    if(marqueeBottom){
-      marqueeBottom.addEventListener('click', (e)=>{
-        if(e.target.classList.contains('grotto')){
-          toggleMode();
-        }
-      });
-    }
-
-    document.addEventListener('keydown', (e)=>{
-      if(e.key.toLowerCase()==='g'){
-        toggleMode();
-      }
-    });
-
-    /* ================= Thumbnail -> main image swap ================= */
-    const mainImg = document.getElementById('productMain');
-    const thumbs = document.querySelectorAll('.thumb');
-
-    thumbs.forEach(btn=>{
-      btn.addEventListener('click', ()=>{
-        const full = btn.getAttribute('data-full');
-        if(full){
-          mainImg.src = full;
-        }
-        thumbs.forEach(t=>t.classList.remove('is-active'));
-        btn.classList.add('is-active');
-      });
-    });
-  </script>
-</body>
-</html>
+    
