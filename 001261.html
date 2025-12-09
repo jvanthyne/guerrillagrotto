@@ -202,7 +202,7 @@
 
 <body>
 
-  <!-- 🔥 Updated background video file name -->
+  <!-- Background video -->
   <video id="bgVideo" autoplay muted loop playsinline>
     <source src="001261backgound.mp4" type="video/mp4" />
   </video>
@@ -255,15 +255,15 @@
   </main>
 
 <script>
-/* Cursor */
+/* Cursor movement */
 const cursor = document.getElementById("cursor");
 window.addEventListener("mousemove", e=>{
   cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
 });
 
-/* Back button */
+/* Red plus → goes to 001catalogbca.html */
 document.getElementById("backBtn").addEventListener("click", ()=>{
-  window.location.href = "index.html";
+  window.location.href = "001catalogbca.html";
 });
 </script>
 
