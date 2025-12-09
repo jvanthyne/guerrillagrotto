@@ -1,122 +1,66 @@
-/* Make project pages full-screen with video background */
-body.project-page {
-  margin: 0;
-  padding: 0;
-  overflow: hidden; /* keeps video full screen */
-  font-family: "Times New Roman", serif; /* change if needed */
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>001 — PROJECT TITLE</title>
 
-/* Full-screen background video */
-.bg-video {
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  z-index: -2;
-}
+  <!-- Use the same CSS file as your index page -->
+  <link rel="stylesheet" href="styles.css" />
 
-/* Dark or light overlay on top of video so text is readable */
-.page-overlay {
-  position: relative;
-  min-height: 100vh;
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  box-sizing: border-box;
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body class="project-page">
 
-  /* You can tweak opacity / color */
-  background: rgba(0, 0, 0, 0.25);
-  color: #000;
-}
+  <!-- BACKGROUND VIDEO (unique per project) -->
+  <video class="bg-video" autoplay muted loop playsinline>
+    <!-- change this src for each project -->
+    <source src="media/project-001-bg.mp4" type="video/mp4" />
+    Your browser does not support the video tag.
+  </video>
 
-/* TOP BAR */
-.top-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
+  <!-- OVERLAY SO CONTENT SITS ON TOP OF VIDEO -->
+  <div class="page-overlay">
 
-/* Circle home button – match your index style */
-.home-circle {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  display: inline-block;
-  cursor: pointer;
+    <!-- TOP BAR / HOME BUTTON / PROJECT NUMBER -->
+    <header class="top-bar">
+      <!-- Circle button that takes you back to index -->
+      <a href="index.html" class="home-circle" aria-label="Back to home"></a>
 
-  /* Set this to your blue-green color */
-  background-color: #3bb9a5;
+      <div class="project-number">
+        001
+      </div>
+    </header>
 
-  transition: transform 0.15s ease, background-color 0.15s ease;
-}
+    <!-- MAIN CONTENT -->
+    <main class="project-layout">
+      <section class="project-meta">
+        <h1 class="project-title">
+          PROJECT TITLE
+        </h1>
 
-.home-circle:hover {
-  transform: scale(0.9);
-  background-color: #2a8f7e; /* darker on hover */
-}
+        <p class="project-location">
+          <span class="label">LOCATION (COORDINATES)</span><br />
+          <span class="coords">
+            37.8715° N, 122.2730° W
+          </span>
+        </p>
 
-.project-number {
-  font-size: 14px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-}
+        <p class="project-description">
+          This is where the project description goes. Keep it to a short
+          paragraph or two describing what you did, why, and anything
+          important about process or materials.
+        </p>
+      </section>
 
-/* MAIN LAYOUT */
-.project-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
-  gap: 32px;
-  align-items: flex-end;
-  margin-top: 40px;
-}
-
-@media (max-width: 800px) {
-  .project-layout {
-    grid-template-columns: 1fr;
-    align-items: flex-start;
-  }
-}
-
-/* TEXT SIDE */
-.project-title {
-  margin: 0 0 16px;
-  font-size: 32px;
-  line-height: 1.1;
-  text-transform: uppercase; /* if you want all caps */
-}
-
-.project-location {
-  margin: 0 0 12px;
-  font-size: 14px;
-}
-
-.project-location .label {
-  font-size: 12px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-}
-
-.project-location .coords {
-  font-size: 14px;
-}
-
-.project-description {
-  margin: 0;
-  max-width: 40rem;
-  font-size: 14px;
-  line-height: 1.4;
-}
-
-/* LOGO SIDE */
-.project-logo {
-  display: flex;
-  justify-content: flex-end;
-  align-items: flex-end;
-}
-
-.project-logo-img {
-  max-width: 220px;
-  height: auto;
-}
+      <section class="project-logo">
+        <!-- Swap this file for each project -->
+        <img
+          src="logos/project-001-logo.svg"
+          alt="Logo for Project 001"
+          class="project-logo-img"
+        />
+      </section>
+    </main>
+  </div>
+</body>
+</html>
