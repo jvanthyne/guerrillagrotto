@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>004 — Stump</title>
+
+  <style>
+    :root{
+      --bg: #000;
+      --fg: #fff;
+      --muted: #999;
+      --stroke: 1px;
+      --cursor-stroke: 1.6px;
+      --plus-size: 16px;
+      --ui-scale: 78vmin;
+      --text-size: 12px;
+      --red: #ff3333;
+    }
+
+    html,body{height:100%;}
+    *{box-sizing:border-box;}
+
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--fg);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      cursor:none;
+      overflow:hidden;
+      position:relative;
+    }
+
+    /* Background video */
+    #bgVideo{
+      position:fixed; inset:0;
+      width:100%; height:100%;
+      object-fit:cover;
+      opacity:0.4;
+      z-index:0;
+      pointer-events:none;
+    }
+
+    /* Custom cursor */
+    .cursor-plus{
+      position: fixed;
+      left:0; top:0;
+      width:0; height:0;
+      z-index:1000;
+      pointer-events:none;
+      filter: drop-shadow(0 0 1px var(--bg));
+    }
+    .cursor-plus::before,
+    .cursor-plus::after{
+      content:"";
+      position:absolute;
+      border: var(--cursor-stroke) solid currentColor;
+      left:0; top:0;
+      transform:translate(-50%, -50%);
+    }
+    .cursor-plus::before{
+      width: calc(var(--plus-size)*2);
+      height:0;
+    }
+    .cursor-plus::after{
+      height: calc(var(--plus-size)*2);
+      width:0;
+    }
+
+    /* Main stage */
+    .stage{
+      position:absolute; inset:0;
+      display:grid; place-items:center;
+      z-index:10;
+      padding:16px;
+    }
+
+    .frame{
+      width:min(var(--ui-scale), 92vw);
+      max-height:72vh;
+      aspect-ratio:4/3;
+      border:var(--stroke) solid var(--fg);
+      display:flex; flex-direction:column;
+      padding:20px 24px;
+      background:rgba(0,0,0,0.35);
+      gap:16px;
+    }
+
+    .frame-inner{
+      border:var(--stroke) solid var(--fg);
+      flex:1;
+      display:flex; flex-direction:column;
+      padding:18px 20px;
+      gap:20px;
+    }
+
+    /* Top bar */
+    .top-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      text-transform:uppercase;
+      letter-spacing:0.14em;
+      font-size:var(--text-size);
+    }
+
+    .project-number{
+      padding:4px 10px;
+      border:var(--stroke) solid var(--fg);
+    }
+
+    /* Simple red plus back button */
+    .back-plus{
+      width:40px; height:40px;
+      position:relative;
+      cursor:pointer;
+    }
+    .back-plus-line{
+      position:absolute;
+      background:var(--red);
+    }
+    .back-plus-line.h{
+      width:26px; height:2px;
+      top:50%; left:50%;
+      transform:translate(-50%, -50%);
+    }
+    .back-plus-line.v{
+      width:2px; height:26px;
+      top:50%; left:50%;
+      transform:translate(-50%, -50%);
+    }
+
+    /* Content layout */
+    .content-row{
+      display:flex;
+      gap:24px;
+      flex:1;
+    }
+
+    .text-col{
+      flex:2;
+      display:flex; flex-direction:column;
+      gap:14px;
+    }
+
+    .project-title{
+      border-bottom:var(--stroke) solid var(--fg);
+      padding-bottom:6px;
+      text-transform:uppercase;
+      letter-spacing:0.14em;
+      font-size:14px;
+    }
+
+    .project-description{
+      font-size:var(--text-size);
+      line-height:1.4;
+      max-width:40rem;
+    }
+
+    .coords-label{
+      color:var(--muted);
+      font-size:10px;
+      text-transform:uppercase;
+      letter-spacing:0.14em;
+    }
+
+    .coords-value{
+      font-size:var(--text-size);
+    }
+
+    .logo-col{
+      flex:1;
+      display:flex;
+      justify-content:flex-end;
+      align-items:flex-end;
+    }
+
+    .logo-frame{
+      border:var(--stroke) solid var(--fg);
+      padding:10px;
+      max-width:180px;
+      max-height:180px;
+    }
+
+    .logo-img{
+      max-width:100%;
+      max-height:100%;
+      object-fit:contain;
+    }
+
+    /* Bottom row */
+    .bottom-row{
+      display:flex;
+      justify-content:space-between;
+      color:var(--muted);
+      font-size:10px;
+      text-transform:uppercase;
+      letter-spacing:0.13em;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Background video -->
+<video id="bgVideo" autoplay muted loop playsinline preload="none">
+  <source src="003679backgound.mp4" type="video/mp4" />
+  </video>
+
+  <div id="cursor" class="cursor-plus"></div>
+
+  <main class="stage">
+    <div class="frame">
+      <div class="frame-inner">
+
+        <!-- TOP BAR -->
+        <div class="top-row">
+          <div class="project-number">002</div>
+
+          <div class="back-plus" id="backBtn">
+            <div class="back-plus-line h"></div>
+            <div class="back-plus-line v"></div>
+          </div>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="content-row">
+          <div class="text-col">
+            <div class="project-title">grasshopper</div>
+
+            <div class="project-description">
+              This is the description for this project. Add whatever text you want here.
+            </div>
+
+            <div class="coords-block">
+              <div class="coords-label">location / coordinates</div>
+              <div class="coords-value">37.864176, -122.243506</div>
+            </div>
+          </div>
+
+          <div class="logo-col">
+            <div class="logo-frame">
+              <img src="project-001-logo.svg" class="logo-img">
+            </div>
+          </div>
+        </div>
+
+        <div class="bottom-row">
+          <div>ISSUE 001</div>
+          <div>GUERRILLA GROTTO</div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+<script>
+/* Cursor movement */
+const cursor = document.getElementById("cursor");
+window.addEventListener("mousemove", e=>{
+  cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+});
+
+/* Red plus → goes to 001catalogbca.html */
+document.getElementById("backBtn").addEventListener("click", ()=>{
+  window.location.href = "001catalogbca.html";
+});
+</script>
+
+</body>
+</html>
