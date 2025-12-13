@@ -14,70 +14,83 @@
 
   <style>
     :root{
-      --bg: #000;          
-      --fg: #fff;          
-      --muted: #999;
-      --stroke: 1px;       
-      --cursor-stroke: 1.6px; 
-      --plus-size: 16px;       
-      --ui-scale: 78vmin;  
-      --text-size: 12px;   
+      --bg:#000;
+      --fg:#fff;
+      --stroke:1px;
+      --cursor-stroke:1.6px;
+      --plus-size:16px;
+      --ui-scale:78vmin;
     }
 
     html,body{height:100%;}
-    *{box-sizing:border-box}
+    *{box-sizing:border-box;}
 
     body{
       margin:0;
       background:var(--bg);
       color:var(--fg);
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
       cursor:none;
       overflow:hidden;
       position:relative;
     }
 
-    /* ========= BACKGROUND IMAGE (PNG) ========= */
+    /* BACKGROUND IMAGE */
     #bgImage{
       position:fixed;
       inset:0;
       width:100%;
       height:100%;
       object-fit:cover;
-      opacity:0.4;      /* adjust if you want more/less visible */
-      z-index:0;
+      opacity:0.4;
       pointer-events:none;
+      z-index:0;
     }
 
-    /* ========= CUSTOM CURSOR ========= */
+    /* BACK NAV */
+    .site-nav{
+      position:fixed;
+      top:40px;
+      left:12px;
+      z-index:30;
+      font-size:12px;
+    }
+    .site-nav a{
+      color:inherit;
+      text-decoration:none;
+      border-bottom:1px solid transparent;
+      padding-bottom:1px;
+    }
+    .site-nav a:hover{
+      border-color:currentColor;
+    }
+
+    /* CUSTOM CURSOR */
     .cursor-plus{
-      position: fixed;
-      left:0;
-      top:0;
-      width:0;
-      height:0;
-      z-index:1000;
+      position:fixed;
+      left:0; top:0;
+      width:0; height:0;
       pointer-events:none;
-      filter: drop-shadow(0 0 1px var(--bg));
+      z-index:1000;
+      filter:drop-shadow(0 0 1px var(--bg));
     }
     .cursor-plus::before,
     .cursor-plus::after{
       content:"";
       position:absolute;
-      border: var(--cursor-stroke) solid currentColor;
-      left:0; top:0;
+      border:var(--cursor-stroke) solid currentColor;
       transform:translate(-50%, -50%);
     }
     .cursor-plus::before{
-      width: calc(var(--plus-size)*2);
+      width:calc(var(--plus-size)*2);
       height:0;
     }
     .cursor-plus::after{
-      height: calc(var(--plus-size)*2);
       width:0;
+      height:calc(var(--plus-size)*2);
     }
 
-    /* ========= MAIN SVG FRAME ========= */
+    /* MAIN FRAME */
     .stage{
       position:absolute;
       inset:0;
@@ -88,80 +101,77 @@
 
     .frame{
       width:min(var(--ui-scale), 92vw);
-      height:auto;
       max-height:72vh;
       aspect-ratio:4/3;
       display:block;
     }
+
   </style>
 </head>
 
 <body>
 
-  <!-- BACKGROUND PNG (replace filename as needed) -->
-  <img id="bgImage" src="grottobackground.png" alt="grotto background" />
+  <!-- BACKGROUND PNG -->
+  <img id="bgImage" src="001grattobackground.png" alt="background">
 
-  <!-- CURSOR -->
+  <!-- BACK BUTTON -->
+  <div class="site-nav">
+    <a href="index.html">◀ back to grotto</a>
+  </div>
+
+  <!-- CUSTOM CURSOR -->
   <div id="cursor" class="cursor-plus"></div>
 
-  <!-- MAIN INTERFACE -->
+  <!-- SVG FRAME -->
   <main class="stage">
     <svg id="ui" class="frame" viewBox="0 0 800 600">
 
-      <g stroke="currentColor" fill="none" stroke-width="var(--stroke)">
-        <!-- main rectangle frame -->
+      <g stroke="currentColor" fill="none" stroke-width="1">
+
+        <!-- MAIN OUTLINE -->
         <rect x="120" y="120" width="560" height="360" rx="2"/>
 
-        <!-- JOIN block (red text + red plus, with rectangle around it) -->
-        <g id="joinGroup" transform="translate(400,300)" cursor="none">
-          <!-- red rectangle around join -->
-          <rect x="-110" y="-55" width="220" height="110"
-                fill="none" stroke="#ff3333" />
+        <!-- ONE RED BOX WITH RED PLUS -->
+        <g id="joinGroup" transform="translate(400,300)">
+          
+          <!-- red rectangle -->
+          <rect x="-120" y="-60" width="240" height="120"
+                fill="none" stroke="#ff3333" stroke-width="1" />
 
-          <!-- red plus (no circle) -->
-          <g id="joinPlus" stroke="#ff3333">
+          <!-- red plus -->
+          <g stroke="#ff3333" stroke-width="1.5">
             <line x1="-24" y1="0" x2="24" y2="0"/>
             <line x1="0" y1="-24" x2="0" y2="24"/>
           </g>
 
-          <!-- JOIN text in red -->
-          <text x="0" y="40"
-                text-anchor="middle"
-                fill="#ff3333"
-                style="font-size:16px; letter-spacing:0.18em; text-transform:uppercase;">
-            JOIN
-          </text>
-
-          <!-- invisible hit area for easier clicking -->
+          <!-- invisible click area -->
           <rect id="joinHit"
-                x="-120" y="-65" width="240" height="130"
+                x="-130" y="-70" width="260" height="140"
                 fill="transparent" stroke="none"
                 pointer-events="auto" />
         </g>
+
       </g>
+
     </svg>
   </main>
 
 <script>
-/* ========== CUSTOM CURSOR ========== */
+/* CURSOR */
 const cursor = document.getElementById("cursor");
-function updateCursor(e){
+window.addEventListener("mousemove", e=>{
   cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
-}
-window.addEventListener("mousemove", updateCursor);
+});
 
-/* ========== JOIN CLICK → MAILTO DRAFT ========== */
-const joinHit = document.getElementById("joinHit");
-
-joinHit.addEventListener("click", () => {
+/* JOIN CLICK → EMAIL */
+document.getElementById("joinHit").addEventListener("click", () => {
   const subject = encodeURIComponent("Welcome to the grotto network");
   const body = encodeURIComponent(
     "Welcome to the grotto network.\n" +
     "You are now a part of the society.\n" +
-    "We will send you relevant details at this email.\n" +
+    "We will send relevant details to this email.\n" +
     "Click send to join."
   );
-
   window.location.href =
     "mailto:bluetilespace@gmail.com?subject=" + subject + "&body=" + body;
 });
