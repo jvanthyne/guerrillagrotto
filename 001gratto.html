@@ -111,7 +111,7 @@
 
 <body>
 
-  <!-- BACKGROUND PNG -->
+  <!-- BACKGROUND IMAGE -->
   <img id="bgImage" src="001grattobackground.png" alt="background">
 
   <!-- BACK BUTTON -->
@@ -157,7 +157,7 @@
   </main>
 
 <script>
-/* CURSOR */
+/* CURSOR MOVEMENT */
 const cursor = document.getElementById("cursor");
 window.addEventListener("mousemove", e=>{
   cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
@@ -165,13 +165,14 @@ window.addEventListener("mousemove", e=>{
 
 /* JOIN CLICK → EMAIL */
 document.getElementById("joinHit").addEventListener("click", () => {
-  const subject = encodeURIComponent("Welcome to the grotto network");
+  const subject = encodeURIComponent("Welcome to the grotto");
   const body = encodeURIComponent(
-    "Welcome to the grotto network.\n" +
+    "Welcome to the grotto.\n" +
     "You are now a part of the society.\n" +
     "We will send relevant details to this email.\n" +
     "Click send to join."
   );
+
   window.location.href =
     "mailto:bluetilespace@gmail.com?subject=" + subject + "&body=" + body;
 });
