@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>the grotto — guerrillagrotto.space</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href='data:image/svg+xml;utf8,
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+    <circle cx="32" cy="32" r="27" fill="none" stroke="black" stroke-width="4"/>
+    <path d="M32 16v32M16 32h32" stroke="black" stroke-width="4" fill="none" stroke-linecap="square"/>
+  </svg>' />
+
+  <style>
+    :root{
+      --bg:#fff;
+      --fg:#000;
+      --muted:#777;
+      --stroke:1px;
+      --phrase-gap:6ch;
+      --text-size:12px;
+    }
+
+    html,body{height:100%; margin:0; padding:0;}
+    *{box-sizing:border-box;}
+
+    body{
+      background:var(--bg);
+      color:var(--fg);
+      font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Courier New", monospace;
+      overflow:hidden;
+      position:relative;
+    }
+
+    /* Back nav */
+    .site-nav{
+      position:fixed;
+      top:40px;
+      left:12px;
+      z-index:30;
+      font-size:var(--text-size);
+    }
+    .site-nav a{
+      color:inherit;
+      text-decoration:none;
+      border-bottom:var(--stroke) solid transparent;
+      padding-bottom:1px;
+    }
+    .site-nav a:hover{
+      border-color:currentColor;
+    }
+
+    /* Main frame */
+    .stage{
+      position:absolute;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:90px 16px 60px;
+    }
+
+    .frame{
+      border:var(--stroke) solid currentColor;
+      padding:40px 24px 28px;
+      width:90vw;
+      max-width:600px;
+      background:transparent;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:16px;
+      text-align:center;
+    }
+
+    .join-label{
+      margin:0;
+      font-size:14px;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+    }
+
+    /* Plus button */
+    .join-link{
+      text-decoration:none;
+      color:inherit;
+    }
+
+    .join-plus{
+      position:relative;
+      width:96px;
+      height:96px;
+      border-radius:50%;
+      border:var(--stroke) solid currentColor;
+      margin:12px auto;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      transition:transform .15s ease, background .15s ease;
+    }
+    .join-plus::before,
+    .join-plus::after{
+      content:"";
+      position:absolute;
+      background:currentColor;
+    }
+    .join-plus::before{
+      width:40px;
+      height:1px;
+    }
+    .join-plus::after{
+      width:1px;
+      height:40px;
+    }
+    .join-link:hover .join-plus{
+      transform:scale(0.96);
+      background:#f3f3f3;
+    }
+
+    .join-note{
+      margin:0;
+      font-size:var(--text-size);
+      color:var(--muted);
+      max-width:32ch;
+      line-height:1.5;
+    }
+
+    .join-hint{
+      margin:8px 0 0;
+      font-size:10px;
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      color:var(--muted);
+    }
+
+    /* Bottom marquee (CSS-only) */
+    .marquee-wrap{
+      position:fixed;
+      left:0; right:0;
+      bottom:0;
+      padding:6px 0;
+      border-top:var(--stroke) solid rgba(0,0,0,0.1);
+      background:var(--bg);
+      font-size:var(--text-size);
+      overflow:hidden;
+      white-space:nowrap;
+    }
+
+    .marquee-inner{
+      display:inline-block;
+      padding-left:100%;
+      animation:scroll-left 18s linear infinite;
+    }
+
+    @keyframes scroll-left{
+      from{transform:translateX(0);}
+      to{transform:translateX(-100%);}
+    }
+
+    .marquee-text{
+      display:inline-block;
+      padding-right:var(--phrase-gap);
+    }
+
+    @media(max-width:480px){
+      .frame{padding:32px 18px 24px;}
+      .join-plus{width:82px; height:82px;}
+      .join-note{font-size:11px;}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Back nav -->
+  <div class="site-nav">
+    <a href="index.html">◀ back to grotto</a>
+  </div>
+
+  <!-- Main content -->
+  <main class="stage">
+    <section class="frame">
+      <p class="join-label">JOIN</p>
+
+      <!-- mailto link with prefilled subject + body -->
+      <a
+        class="join-link"
+        href="mailto:bluetilespace@gmail.com
+          ?subject=Welcome%20to%20the%20grotto%20network
+          &body=Welcome%20to%20the%20grotto%20network.%0AYou%20are%20now%20a%20part%20of%20the%20society.%0AWe%20will%20send%20you%20relevant%20details%20at%20this%20email.%0AClick%20send%20to%20join.">
+        <div class="join-plus"></div>
+      </a>
+
+      <p class="join-note">
+        click the plus to draft an email and join the guerrillagrotto network.
+      </p>
+      <p class="join-hint">
+        review the message, then click send to complete the ritual.
+      </p>
+    </section>
+  </main>
+
+  <!-- Bottom marquee -->
+  <div class="marquee-wrap">
+    <div class="marquee-inner">
+      <span class="marquee-text">Welcome to the guerrillagrotto network</span>
+      <span class="marquee-text">Welcome to the guerrillagrotto network</span>
+      <span class="marquee-text">Welcome to the guerrillagrotto network</span>
+      <span class="marquee-text">Welcome to the guerrillagrotto network</span>
+      <span class="marquee-text">Welcome to the guerrillagrotto network</span>
+    </div>
+  </div>
+
+</body>
+</html>
