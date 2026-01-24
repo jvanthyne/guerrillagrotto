@@ -22,6 +22,7 @@
       --plus-size:16px;
       --phrase-gap:12ch;
       --text-size:12px;
+      --frame-max:900px;
     }
 
     html,body{height:100%;}
@@ -37,6 +38,25 @@
       position:relative;
     }
     body *{cursor:none;}
+
+    /* Background video */
+    .bg-video{
+      position:fixed;
+      inset:0;
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      z-index:0;
+      filter:contrast(1.05) brightness(0.65);
+      transform:translateZ(0);
+    }
+    .bg-dim{
+      position:fixed;
+      inset:0;
+      z-index:1;
+      background:rgba(0,0,0,0.42);
+      pointer-events:none;
+    }
 
     /* Cursor */
     .cursor-plus{
@@ -71,6 +91,7 @@
       left:12px;
       z-index:30;
       font-size:var(--text-size);
+      mix-blend-mode:normal;
     }
     .site-nav a{
       color:inherit;
@@ -88,6 +109,7 @@
       left:0; right:0;
       user-select:none;
       z-index:20;
+      pointer-events:none;
     }
     .marquee-wrap.top{top:0; padding-top:8px;}
     .marquee-wrap.bottom{bottom:0; padding-bottom:8px;}
@@ -126,9 +148,9 @@
     .frame{
       border:var(--stroke) solid currentColor;
       padding:20px;
-      width:90vw;
-      max-width:900px;
-      background:transparent;
+      width:min(92vw, var(--frame-max));
+      background:rgba(0,0,0,0.18);
+      backdrop-filter: blur(2px);
       display:flex;
       flex-direction:column;
       gap:20px;
@@ -146,6 +168,7 @@
       display:flex;
       flex-direction:column;
       gap:10px;
+      min-width:0;
     }
 
     .product-image-main-wrap{
@@ -154,11 +177,13 @@
       aspect-ratio:4/3;
       overflow:hidden;
       display:flex; align-items:center; justify-content:center;
+      background:rgba(0,0,0,0.25);
     }
     .product-image-main{
       width:100%;
       height:100%;
       object-fit:cover;
+      display:block;
     }
 
     .thumb-strip{
@@ -169,17 +194,17 @@
 
     .thumb{
       padding:0;
-      width:calc(20% - 4px);
+      width:calc(20% - 4.8px);
       aspect-ratio:4/3;
       border:var(--stroke) solid currentColor;
       background:none;
       opacity:0.7;
-      transition:all .15s ease;
+      transition:opacity .15s ease, transform .15s ease;
     }
     .thumb img{
-      width:100%; height:100%; object-fit:cover;
+      width:100%; height:100%; object-fit:cover; display:block;
     }
-    .thumb:hover{opacity:1;}
+    .thumb:hover{opacity:1; transform:translateY(-1px);}
     .thumb.is-active{opacity:1;}
 
     /* Right side: Text */
@@ -189,7 +214,8 @@
       flex-direction:column;
       justify-content:space-between;
       font-size:var(--text-size);
-      line-height:1.5;
+      line-height:1.55;
+      min-width:0;
     }
 
     .product-title{
@@ -209,14 +235,21 @@
     .product-description,
     .product-notes{margin:0 0 12px 0;}
 
+    .product-list{
+      margin:0 0 12px 0;
+      padding-left:18px;
+    }
+    .product-list li{margin:6px 0;}
+    .product-list strong{font-weight:700;}
+
     .product-price{
-      margin:8px 0;
+      margin:8px 0 10px;
       font-size:13px;
     }
 
     .btn{
       border:var(--stroke) solid currentColor;
-      padding:6px 10px;
+      padding:8px 10px;
       background:none;
       color:inherit;
       text-decoration:none;
@@ -226,19 +259,39 @@
       justify-content:center;
       align-items:center;
       font-size:var(--text-size);
+      width:fit-content;
+      max-width:100%;
     }
-
-    .btn:hover{
-      filter:brightness(calc(100% - var(--hover-delta)));
-    }
+    .btn:hover{opacity:0.92;}
+    .btn:active{transform:translateY(1px);}
 
     /* Mobile */
     @media(max-width:768px){
+      :root{ --text-size:12px; }
+      .site-nav{top:44px;}
+      .stage{padding:92px 14px 78px;}
+      .frame{padding:16px; width:94vw;}
       .product-layout{flex-direction:column;}
+      .thumb{width:calc(33.333% - 4px);}
+      .product-title{font-size:15px;}
+      .product-price{font-size:13px; line-height:1.35;}
+      .btn{width:100%;}
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce){
+      .marquee{animation:none;}
+      .thumb{transition:none;}
     }
   </style>
 </head>
 <body>
+
+  <!-- Background video -->
+  <video class="bg-video" autoplay muted loop playsinline preload="metadata">
+    <source src="Ggshop.mp4" type="video/mp4" />
+  </video>
+  <div class="bg-dim"></div>
 
   <!-- Cursor -->
   <div id="cursor" class="cursor-plus"></div>
@@ -266,21 +319,21 @@
                  alt="Issue 001 main image">
           </div>
 
-          <div class="thumb-strip">
-            <button class="thumb is-active" data-full="ggproductimage001.png">
-              <img src="ggproductimage001.png">
+          <div class="thumb-strip" aria-label="Product image thumbnails">
+            <button class="thumb is-active" type="button" data-full="ggproductimage001.png" aria-label="View image 1">
+              <img src="ggproductimage001.png" alt="">
             </button>
-            <button class="thumb" data-full="ggproductimage002.png">
-              <img src="ggproductimage002.png">
+            <button class="thumb" type="button" data-full="ggproductimage002.png" aria-label="View image 2">
+              <img src="ggproductimage002.png" alt="">
             </button>
-            <button class="thumb" data-full="ggproductimage003.png">
-              <img src="ggproductimage003.png">
+            <button class="thumb" type="button" data-full="ggproductimage003.png" aria-label="View image 3">
+              <img src="ggproductimage003.png" alt="">
             </button>
-            <button class="thumb" data-full="ggproductimage004.png">
-              <img src="ggproductimage004.png">
+            <button class="thumb" type="button" data-full="ggproductimage004.png" aria-label="View image 4">
+              <img src="ggproductimage004.png" alt="">
             </button>
-            <button class="thumb" data-full="ggproductimage005.png">
-              <img src="ggproductimage005.png">
+            <button class="thumb" type="button" data-full="ggproductimage005.png" aria-label="View image 5">
+              <img src="ggproductimage005.png" alt="">
             </button>
           </div>
         </div>
@@ -289,33 +342,31 @@
         <aside class="product-meta">
           <div>
             <h1 class="product-title"><em>Issue 001</em></h1>
-            <p class="product-location">zine + stainless steel cup</p>
-            <p class="product-meta-small">FIRST ISSUE / GUERRILLA BUILDS / KEYS</p>
+            <p class="product-location">physical + digital keys to the map + coffee mug</p>
+            <p class="product-meta-small">ISSUE 001 / 8 SITES / BERKELEY</p>
 
             <p class="product-description">
-              Issue 001 is a key into a matrix of guerrilla furniture on and
-              around the UC Berkeley campus. Places to connect—with place and
-              with people—each with a different goal, under the same loose
-              guidelines: done with purpose, without permission, and with what
-              is available.
+              Issue 001 is a key into a matrix of guerrilla furniture on and around the UC Berkeley campus.
+              Places to connect—with place and with people—each with a different goal, under the same loose
+              guidelines: done with purpose, without permission, and with what is available.
             </p>
 
-            <p class="product-notes">
-              Each set includes one printed zine with the locations of all
-              current active builds and one stainless steel cup for the beverage
-              of your choice—from coffee to wine. The zine functions as a map
-              and “key”; the cup acts as an open invitation to future gatherings.
-              Once purchased, you will be added to a mailing list.
-            </p>
+            <p class="product-notes">Each purchase will include:</p>
+            <ul class="product-list">
+              <li><strong>Mug</strong> (for enjoying a beverage at any of the 8 sites—from a cup of coffee to a glass of wine)</li>
+              <li><strong>Physical list</strong> of all current builds and locations</li>
+              <li><strong>Digital access</strong> to all builds with more information + backstory on each project</li>
+            </ul>
           </div>
 
           <div>
             <p class="product-price">
-              USD 16.00 — includes zine + cup + mailing list (hand delivered in Berkeley, CA)
+              USD $10.00 — includes map + cup + exclusive digital access to all current builds
+              (hand delivered in Berkeley, CA)
             </p>
 
             <a class="btn"
-              href="mailto:bluetilespace@gmail.com?subject=Issue%20001%20Order&body=Thanks%20for%20your%20interest%20in%20Issue%20001.%0APlease%20drop%20your%20name%20and%20we%E2%80%99ll%20reply%20with%20payment%20and%20drop%E2%80%91off%20information.%0A%0AThanks.">
+              href="mailto:bluetilespace@gmail.com?subject=Issue%20001%20Order&body=Thanks%20for%20your%20interest.%0A%0A-%20%2410%20each%20(cash%20only)%0A-%20Instructions%20for%20pickup%2Fdrop%20off%20will%20come%20once%20you%20click%20send.%0A%0ACheers%2C%20enjoy.">
               email to purchase
             </a>
           </div>
@@ -336,7 +387,7 @@
     function setCursorPos(e){
       cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
     }
-    window.addEventListener("mousemove", setCursorPos);
+    window.addEventListener("mousemove", setCursorPos, { passive:true });
 
     /* Build marquees */
     function buildMarqueeBottom(){
@@ -375,10 +426,12 @@
 
     /* Thumbnails → main image */
     const main=document.getElementById("productMain");
-    document.querySelectorAll(".thumb").forEach(btn=>{
+    const thumbs=[...document.querySelectorAll(".thumb")];
+    thumbs.forEach(btn=>{
       btn.addEventListener("click", ()=>{
-        main.src=btn.getAttribute("data-full");
-        document.querySelectorAll(".thumb").forEach(t=>t.classList.remove("is-active"));
+        const src=btn.getAttribute("data-full");
+        if(src) main.src=src;
+        thumbs.forEach(t=>t.classList.remove("is-active"));
         btn.classList.add("is-active");
       });
     });
