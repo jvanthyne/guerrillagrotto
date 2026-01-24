@@ -33,10 +33,34 @@
       color:var(--fg);
       font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Courier New", monospace;
       cursor:none;
+      overflow:auto;
+      position:relative;
     }
     body *{cursor:none;}
 
-    /* Cursor */
+    /* ======================
+       BACKGROUND VIDEO
+    ====================== */
+    .bg-video{
+      position:fixed;
+      inset:0;
+      width:100vw;
+      height:100vh;
+      object-fit:cover;
+      z-index:-2;
+    }
+
+    .bg-video-overlay{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.45);
+      z-index:-1;
+      pointer-events:none;
+    }
+
+    /* ======================
+       CURSOR
+    ====================== */
     .cursor-plus{
       position:fixed;
       left:0; top:0;
@@ -55,7 +79,9 @@
     .cursor-plus::before{width:calc(var(--plus-size)*2);}
     .cursor-plus::after{height:calc(var(--plus-size)*2);}
 
-    /* Nav */
+    /* ======================
+       NAV
+    ====================== */
     .site-nav{
       position:fixed;
       top:40px;
@@ -70,12 +96,43 @@
     }
     .site-nav a:hover{border-color:currentColor;}
 
-    /* Main */
+    /* ======================
+       MARQUEES
+    ====================== */
+    .marquee-wrap{
+      position:fixed;
+      left:0; right:0;
+      user-select:none;
+      z-index:20;
+      pointer-events:none;
+    }
+    .marquee-wrap.top{top:0; padding-top:8px;}
+    .marquee-wrap.bottom{bottom:0; padding-bottom:8px;}
+
+    .marquee{
+      display:flex;
+      white-space:nowrap;
+      gap:var(--phrase-gap);
+      animation:scroll 18s linear infinite;
+      font-size:var(--text-size);
+    }
+    .marquee .chunk{display:flex; gap:var(--phrase-gap);}
+    @keyframes scroll{
+      from{transform:translateX(0);}
+      to{transform:translateX(-50%);}
+    }
+    .marquee-wrap.top .marquee{animation-direction:reverse;}
+
+    /* ======================
+       MAIN
+    ====================== */
     .stage{
       padding:90px 16px 80px;
       display:flex;
       justify-content:center;
       min-height:100vh;
+      z-index:10;
+      position:relative;
     }
 
     .frame{
@@ -86,6 +143,8 @@
       display:flex;
       flex-direction:column;
       gap:20px;
+      background:rgba(0,0,0,0.15);
+      backdrop-filter:blur(2px);
     }
 
     .product-layout{
@@ -93,7 +152,9 @@
       gap:20px;
     }
 
-    /* Images */
+    /* ======================
+       IMAGES
+    ====================== */
     .product-media{
       flex:1.2;
       display:flex;
@@ -113,6 +174,7 @@
       height:100%;
       object-fit:cover;
       filter:grayscale(100%) contrast(1.05);
+      display:block;
     }
 
     .thumb-strip{
@@ -135,17 +197,19 @@
       height:100%;
       object-fit:cover;
       filter:grayscale(100%) contrast(1.05);
+      display:block;
     }
 
+    .thumb:hover{opacity:1;}
     .thumb.is-active{
       opacity:1;
       outline:1px solid currentColor;
       outline-offset:2px;
     }
 
-    .thumb:hover{opacity:1;}
-
-    /* Text */
+    /* ======================
+       TEXT
+    ====================== */
     .product-meta{
       flex:1;
       display:flex;
@@ -174,6 +238,7 @@
       padding-left:16px;
       margin:0 0 12px;
     }
+    .product-list li{margin:6px 0;}
 
     .product-price{font-size:13px;}
 
@@ -186,8 +251,12 @@
       font-size:var(--text-size);
       letter-spacing:.08em;
       text-align:center;
+      display:inline-block;
     }
 
+    /* ======================
+       MOBILE
+    ====================== */
     @media(max-width:768px){
       .product-layout{flex-direction:column;}
       .btn{width:100%;}
@@ -197,10 +266,23 @@
 
 <body>
 
+<!-- Background video -->
+<video class="bg-video" autoplay muted loop playsinline preload="auto">
+  <source src="Ggshop.mp4" type="video/mp4">
+</video>
+<div class="bg-video-overlay"></div>
+
+<!-- Cursor -->
 <div id="cursor" class="cursor-plus"></div>
 
+<!-- Nav -->
 <div class="site-nav">
   <a href="index.html">◀ back to grotto</a>
+</div>
+
+<!-- Top marquee -->
+<div class="marquee-wrap top">
+  <div id="marqueeTop" class="marquee"></div>
 </div>
 
 <main class="stage">
@@ -264,12 +346,30 @@
   </section>
 </main>
 
+<!-- Bottom marquee -->
+<div class="marquee-wrap bottom">
+  <div id="marqueeBottom" class="marquee"></div>
+</div>
+
 <script>
+  /* Cursor */
   const cursor=document.getElementById("cursor");
   window.addEventListener("mousemove",e=>{
     cursor.style.transform=`translate(${e.clientX}px,${e.clientY}px)`;
   });
 
+  /* Marquees */
+  function attach(target,text){
+    const a=document.createElement("div");
+    a.className="chunk";
+    a.textContent=text;
+    const b=a.cloneNode(true);
+    target.append(a,b);
+  }
+  attach(marqueeTop,"Limited stock — $10 cash — Berkeley pickup");
+  attach(marqueeBottom,"Welcome to the grotto");
+
+  /* Gallery */
   const main=document.getElementById("productMain");
   document.querySelectorAll(".thumb").forEach(t=>{
     t.addEventListener("click",()=>{
