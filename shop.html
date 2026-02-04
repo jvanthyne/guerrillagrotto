@@ -3,26 +3,15 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>challenge — guerrillagrotto.space</title>
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/svg+xml" href='data:image/svg+xml;utf8,
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-    <circle cx="32" cy="32" r="27" fill="none" stroke="black" stroke-width="4"/>
-    <path d="M32 16v32M16 32h32" stroke="black" stroke-width="4" fill="none" stroke-linecap="square"/>
-  </svg>' />
+  <title>Issue 001 — guerrillagrotto.space</title>
 
   <style>
     :root{
       --bg:#000;
       --fg:#fff;
-      --muted:#999;
+      --muted:#777;
       --stroke:1px;
-      --cursor-stroke:1.6px;
-      --plus-size:16px;
-      --phrase-gap:12ch;
       --text-size:12px;
-
       --btn-red:#ff3b30;
     }
 
@@ -34,54 +23,14 @@
       background:var(--bg);
       color:var(--fg);
       font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Courier New", monospace;
-      cursor:none;
       overflow:auto;
-      position:relative;
     }
-    body *{cursor:none;}
-
-    /* BACKGROUND VIDEO */
-    .bg-video{
-      position:fixed;
-      inset:0;
-      width:100vw;
-      height:100vh;
-      object-fit:cover;
-      z-index:-2;
-    }
-    .bg-video-overlay{
-      position:fixed;
-      inset:0;
-      background:rgba(0,0,0,0.45);
-      z-index:-1;
-      pointer-events:none;
-    }
-
-    /* CURSOR */
-    .cursor-plus{
-      position:fixed;
-      left:0; top:0;
-      width:0; height:0;
-      z-index:1000;
-      pointer-events:none;
-    }
-    .cursor-plus::before,
-    .cursor-plus::after{
-      content:"";
-      position:absolute;
-      left:0; top:0;
-      border:var(--cursor-stroke) solid currentColor;
-      transform:translate(-50%, -50%);
-    }
-    .cursor-plus::before{width:calc(var(--plus-size)*2);}
-    .cursor-plus::after{height:calc(var(--plus-size)*2);}
 
     /* NAV */
     .site-nav{
       position:fixed;
       top:40px;
       left:12px;
-      z-index:30;
       font-size:var(--text-size);
     }
     .site-nav a{
@@ -91,230 +40,109 @@
     }
     .site-nav a:hover{border-color:currentColor;}
 
-    /* MARQUEES */
-    .marquee-wrap{
-      position:fixed;
-      left:0; right:0;
-      user-select:none;
-      z-index:20;
-      pointer-events:none;
-    }
-    .marquee-wrap.top{top:0; padding-top:8px;}
-    .marquee-wrap.bottom{bottom:0; padding-bottom:8px;}
-
-    .marquee{
-      display:flex;
-      white-space:nowrap;
-      gap:var(--phrase-gap);
-      animation:scroll 18s linear infinite;
-      font-size:var(--text-size);
-    }
-    .marquee .chunk{display:flex; gap:var(--phrase-gap);}
-    @keyframes scroll{
-      from{transform:translateX(0);}
-      to{transform:translateX(-50%);}
-    }
-    .marquee-wrap.top .marquee{animation-direction:reverse;}
-
     /* MAIN */
     .stage{
-      padding:90px 16px 80px;
+      padding:120px 16px;
       display:flex;
       justify-content:center;
       min-height:100vh;
-      z-index:10;
-      position:relative;
     }
 
     .frame{
       border:var(--stroke) solid currentColor;
-      padding:20px;
+      padding:28px;
       width:90vw;
-      max-width:820px;
-      display:flex;
-      flex-direction:column;
-      gap:20px;
-      background:rgba(0,0,0,0.15);
-      backdrop-filter:blur(2px);
+      max-width:680px;
+      background:rgba(0,0,0,0.2);
     }
 
-    .product-layout{
-      display:flex;
-      gap:22px;
-      align-items:flex-start;
-    }
-
-    /* IMAGE (SMALL + TINT) */
-    .product-media{flex:0 0 auto;}
-    .product-image-main-wrap{
-      width:120px;
-      height:120px;
-      border:var(--stroke) solid currentColor;
-      background:#000;
-      overflow:hidden;
-    }
-
-    .product-image-main{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      display:block;
-
-      /* more transparent + red tint */
-      opacity:0.55;
-      filter:grayscale(100%) contrast(1.05) sepia(1) hue-rotate(-20deg) saturate(6);
-      mix-blend-mode:screen;
-    }
-
-    /* TEXT */
-    .product-meta{
-      flex:1;
-      display:flex;
-      flex-direction:column;
-      justify-content:space-between;
-      font-size:var(--text-size);
-      line-height:1.55;
-      min-height:120px;
-    }
-
-    .product-title{
-      margin:0 0 6px;
+    .title{
       font-style:italic;
       font-size:14px;
+      margin:0 0 6px;
     }
 
-    .product-location{color:var(--muted);}
-    .product-meta-small{
+    .sub{
       color:var(--muted);
-      letter-spacing:.08em;
-      text-transform:uppercase;
       font-size:10px;
-      margin-bottom:10px;
+      letter-spacing:.1em;
+      text-transform:uppercase;
+      margin-bottom:18px;
     }
 
-    .product-list{
-      padding-left:16px;
-      margin:0 0 10px;
+    p{
+      font-size:var(--text-size);
+      line-height:1.6;
+      margin:0 0 14px;
     }
-    .product-list li{margin:6px 0;}
 
-    /* RED EMAIL BUTTON */
+    ul{
+      padding-left:14px;
+      margin:0 0 18px;
+      font-size:var(--text-size);
+    }
+    li{margin:6px 0;}
+
+    /* BUTTON */
     .btn{
       border:var(--stroke) solid var(--btn-red);
-      padding:8px 10px;
-      text-decoration:none;
       color:var(--btn-red);
+      text-decoration:none;
       text-transform:uppercase;
       font-size:var(--text-size);
-      letter-spacing:.08em;
-      text-align:center;
+      letter-spacing:.12em;
+      padding:10px 14px;
       display:inline-block;
     }
     .btn:hover{
       background:var(--btn-red);
       color:#000;
     }
-
-    /* MOBILE */
-    @media(max-width:768px){
-      .product-layout{flex-direction:column;}
-      .product-image-main-wrap{width:110px;height:110px;}
-      .btn{width:100%;}
-    }
   </style>
 </head>
 
 <body>
 
-  <!-- Background video -->
-  <video class="bg-video" autoplay muted loop playsinline preload="auto">
-    <source src="ggshop.mp4" type="video/mp4">
-  </video>
-  <div class="bg-video-overlay"></div>
-
-  <!-- Cursor -->
-  <div id="cursor" class="cursor-plus"></div>
-
-  <!-- Nav -->
   <div class="site-nav">
-    <a href="index.html">◀ back to grotto</a>
-  </div>
-
-  <!-- Top marquee -->
-  <div class="marquee-wrap top">
-    <div id="marqueeTop" class="marquee"></div>
+    <a href="index.html">◀ back</a>
   </div>
 
   <main class="stage">
     <section class="frame">
-      <div class="product-layout">
 
-        <!-- ONLY FIRST IMAGE (SMALL + TINT) -->
-        <div class="product-media">
-          <div class="product-image-main-wrap">
-            <img class="product-image-main" src="ggproductimage001.png" alt="">
-          </div>
-        </div>
+      <h1 class="title"><em>Issue 001</em></h1>
+      <div class="sub">(berkeley, ca — guerrilla furniture)</div>
 
-        <!-- TEXT (MORE CRYPTIC) -->
-        <aside class="product-meta">
-          <div>
-            <h1 class="product-title"><em>Issue 001</em></h1>
-            <p class="product-location">uc berkeley / 8 guerrilla builds</p>
-            <p class="product-meta-small">FIND / PROVE / UNLOCK</p>
+      <p>
+        Eight forms are placed across campus.
+        Not marked.
+        Not announced.
+      </p>
 
-            <p>
-              8 are placed.
-              8 are waiting.
-            </p>
+      <p>
+        They sit where they are needed.
+        They wait to be noticed.
+      </p>
 
-            <ul class="product-list">
-              <li>find all</li>
-              <li>send proof</li>
-              <li>claim the mug</li>
-              <li>unlock the hidden build</li>
-            </ul>
-          </div>
+      <ul>
+        <li>find all eight</li>
+        <li>complete the circuit</li>
+        <li>receive the mug</li>
+        <li>learn the final location</li>
+      </ul>
 
-          <div>
-            <a class="btn"
-              href="mailto:bluetilespace@gmail.com?subject=Issue%20001%20%E2%80%94%20Join%20Challenge&body=Hi%2C%0A%0AI%E2%80%99m%20in.%20Send%20instructions%20on%20how%20to%20start.%0A%0AThanks%2C%0AJack">
-              click to join the challenge
-            </a>
-          </div>
-        </aside>
+      <p>
+        Some things are only given
+        after moving through them.
+      </p>
 
-      </div>
+      <a class="btn"
+        href="mailto:bluetilespace@gmail.com?subject=Issue%20001&body=Send%20instructions%20to%20begin.">
+        start
+      </a>
+
     </section>
   </main>
-
-  <!-- Bottom marquee -->
-  <div class="marquee-wrap bottom">
-    <div id="marqueeBottom" class="marquee"></div>
-  </div>
-
-  <script>
-    /* Cursor */
-    const cursor = document.getElementById("cursor");
-    window.addEventListener("mousemove", (e) => {
-      cursor.style.transform = `translate(${e.clientX}px,${e.clientY}px)`;
-    });
-
-    /* Marquees */
-    const marqueeTop = document.getElementById("marqueeTop");
-    const marqueeBottom = document.getElementById("marqueeBottom");
-
-    function attach(target, text){
-      const a = document.createElement("div");
-      a.className = "chunk";
-      a.textContent = text;
-      const b = a.cloneNode(true);
-      target.append(a, b);
-    }
-
-    attach(marqueeTop, "8 builds — 1 mug — 1 hidden location");
-    attach(marqueeBottom, "prove it");
-  </script>
 
 </body>
 </html>
