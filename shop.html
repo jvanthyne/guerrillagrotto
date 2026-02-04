@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>shop — guerrillagrotto.space</title>
+  <title>challenge — guerrillagrotto.space</title>
 
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href='data:image/svg+xml;utf8,
@@ -38,9 +38,6 @@
     }
     body *{cursor:none;}
 
-    /* ======================
-       BACKGROUND VIDEO
-    ====================== */
     .bg-video{
       position:fixed;
       inset:0;
@@ -49,7 +46,6 @@
       object-fit:cover;
       z-index:-2;
     }
-
     .bg-video-overlay{
       position:fixed;
       inset:0;
@@ -58,9 +54,6 @@
       pointer-events:none;
     }
 
-    /* ======================
-       CURSOR
-    ====================== */
     .cursor-plus{
       position:fixed;
       left:0; top:0;
@@ -79,9 +72,6 @@
     .cursor-plus::before{width:calc(var(--plus-size)*2);}
     .cursor-plus::after{height:calc(var(--plus-size)*2);}
 
-    /* ======================
-       NAV
-    ====================== */
     .site-nav{
       position:fixed;
       top:40px;
@@ -96,9 +86,6 @@
     }
     .site-nav a:hover{border-color:currentColor;}
 
-    /* ======================
-       MARQUEES
-    ====================== */
     .marquee-wrap{
       position:fixed;
       left:0; right:0;
@@ -123,9 +110,6 @@
     }
     .marquee-wrap.top .marquee{animation-direction:reverse;}
 
-    /* ======================
-       MAIN
-    ====================== */
     .stage{
       padding:90px 16px 80px;
       display:flex;
@@ -152,9 +136,6 @@
       gap:20px;
     }
 
-    /* ======================
-       IMAGES
-    ====================== */
     .product-media{
       flex:1.2;
       display:flex;
@@ -207,9 +188,6 @@
       outline-offset:2px;
     }
 
-    /* ======================
-       TEXT
-    ====================== */
     .product-meta{
       flex:1;
       display:flex;
@@ -240,8 +218,6 @@
     }
     .product-list li{margin:6px 0;}
 
-    .product-price{font-size:13px;}
-
     .btn{
       border:var(--stroke) solid currentColor;
       padding:8px 10px;
@@ -254,9 +230,6 @@
       display:inline-block;
     }
 
-    /* ======================
-       MOBILE
-    ====================== */
     @media(max-width:768px){
       .product-layout{flex-direction:column;}
       .btn{width:100%;}
@@ -266,21 +239,17 @@
 
 <body>
 
-<!-- Background video -->
 <video class="bg-video" autoplay muted loop playsinline preload="auto">
   <source src="ggshop.mp4" type="video/mp4">
 </video>
 <div class="bg-video-overlay"></div>
 
-<!-- Cursor -->
 <div id="cursor" class="cursor-plus"></div>
 
-<!-- Nav -->
 <div class="site-nav">
   <a href="index.html">◀ back to grotto</a>
 </div>
 
-<!-- Top marquee -->
 <div class="marquee-wrap top">
   <div id="marqueeTop" class="marquee"></div>
 </div>
@@ -289,7 +258,6 @@
   <section class="frame">
     <div class="product-layout">
 
-      <!-- Images -->
       <div class="product-media">
         <div class="product-image-main-wrap">
           <img id="productMain" class="product-image-main"
@@ -298,46 +266,43 @@
 
         <div class="thumb-strip">
           <button class="thumb is-active" data-full="ggproductimage001.png">
-            <img src="ggproductimage001.png">
+            <img src="ggproductimage001.png" alt="">
           </button>
           <button class="thumb" data-full="ggproductimage002.png">
-            <img src="ggproductimage002.png">
+            <img src="ggproductimage002.png" alt="">
           </button>
           <button class="thumb" data-full="ggproductimage005.png">
-            <img src="ggproductimage005.png">
+            <img src="ggproductimage005.png" alt="">
           </button>
         </div>
       </div>
 
-      <!-- Text -->
       <aside class="product-meta">
         <div>
-          <h1 class="product-title"><em>Issue 001</em></h1>
-          <p class="product-location"> acess to a matrix of guerrilla furniture </p>
+          <h1 class="product-title"><em>Issue 001 — Challenge</em></h1>
+          <p class="product-location">visit every site / earn the mug</p>
           <p class="product-meta-small">ISSUE 001 / 8 SITES / BERKELEY</p>
 
           <p>
-            Issue 001 is a key into a matrix of guerrilla furniture on and around
+            Issue 001 is a challenge: a matrix of guerrilla furniture on and around
             the UC Berkeley campus—places to connect with place and people,
             built with purpose, without permission, and with what is available.
           </p>
 
           <ul class="product-list">
-            <li>Mug for use at all 8 sites</li>
-            <li>Physical list of builds + locations</li>
-            <li>Digital access with backstory</li>
+            <li>Get the list of 8 builds + locations</li>
+            <li>Visit every site and document your route</li>
+            <li>Send proof — claim the mug as the prize</li>
+            <li>Optional: digital backstory / notes</li>
           </ul>
+
+          <p class="product-location">no purchase — the mug is earned.</p>
         </div>
 
         <div>
-          <p class="product-price">
-            USD $10.00 — includes map + cup + exclusive digital access  
-            (hand delivered in Berkeley, CA)
-          </p>
-
           <a class="btn"
-             href="mailto:bluetilespace@gmail.com?subject=Issue%20001%20Order">
-            email to purchase
+             href="mailto:bluetilespace@gmail.com?subject=Issue%20001%20%E2%80%94%20Challenge%20Interest&body=Hi%2C%0A%0AI%E2%80%99m%20interested%20in%20the%20Issue%20001%20challenge.%20Can%20you%20send%20me%20the%20list%20of%20sites%20%2B%20any%20rules%20for%20proof%2Fclaiming%20the%20mug%3F%0A%0AThanks%2C%0AJack">
+            email to join challenge
           </a>
         </div>
       </aside>
@@ -346,35 +311,38 @@
   </section>
 </main>
 
-<!-- Bottom marquee -->
 <div class="marquee-wrap bottom">
   <div id="marqueeBottom" class="marquee"></div>
 </div>
 
 <script>
   /* Cursor */
-  const cursor=document.getElementById("cursor");
-  window.addEventListener("mousemove",e=>{
-    cursor.style.transform=`translate(${e.clientX}px,${e.clientY}px)`;
+  const cursor = document.getElementById("cursor");
+  window.addEventListener("mousemove", (e) => {
+    cursor.style.transform = `translate(${e.clientX}px,${e.clientY}px)`;
   });
 
+  /* FIX: explicitly grab marquee elements (otherwise script can fail) */
+  const marqueeTop = document.getElementById("marqueeTop");
+  const marqueeBottom = document.getElementById("marqueeBottom");
+
   /* Marquees */
-  function attach(target,text){
-    const a=document.createElement("div");
-    a.className="chunk";
-    a.textContent=text;
-    const b=a.cloneNode(true);
-    target.append(a,b);
+  function attach(target, text){
+    const a = document.createElement("div");
+    a.className = "chunk";
+    a.textContent = text;
+    const b = a.cloneNode(true);
+    target.append(a, b);
   }
-  attach(marqueeTop,"Limited stock — $10 cash — Berkeley pickup");
-  attach(marqueeBottom,"Welcome to the grotto");
+  attach(marqueeTop, "Issue 001 — 8 sites — earn the mug — Berkeley");
+  attach(marqueeBottom, "Welcome to the grotto");
 
   /* Gallery */
-  const main=document.getElementById("productMain");
-  document.querySelectorAll(".thumb").forEach(t=>{
-    t.addEventListener("click",()=>{
-      main.src=t.dataset.full;
-      document.querySelectorAll(".thumb").forEach(x=>x.classList.remove("is-active"));
+  const main = document.getElementById("productMain");
+  document.querySelectorAll(".thumb").forEach((t) => {
+    t.addEventListener("click", () => {
+      main.src = t.dataset.full;
+      document.querySelectorAll(".thumb").forEach((x) => x.classList.remove("is-active"));
       t.classList.add("is-active");
     });
   });
