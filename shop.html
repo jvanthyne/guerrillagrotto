@@ -11,6 +11,9 @@
       --fg:#fff;
       --muted:#777;
       --stroke:1px;
+      --cursor-stroke:1.6px;
+      --plus-size:16px;
+      --phrase-gap:12ch;
       --text-size:12px;
       --btn-red:#ff3b30;
     }
@@ -23,14 +26,60 @@
       background:var(--bg);
       color:var(--fg);
       font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Courier New", monospace;
+      cursor:none;
       overflow:auto;
+      position:relative;
+    }
+    body *{cursor:none;}
+
+    /* ======================
+       BACKGROUND VIDEO
+    ====================== */
+    .bg-video{
+      position:fixed;
+      inset:0;
+      width:100vw;
+      height:100vh;
+      object-fit:cover;
+      z-index:-2;
+    }
+    .bg-video-overlay{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.45);
+      z-index:-1;
+      pointer-events:none;
     }
 
-    /* NAV */
+    /* ======================
+       CURSOR
+    ====================== */
+    .cursor-plus{
+      position:fixed;
+      left:0; top:0;
+      width:0; height:0;
+      z-index:1000;
+      pointer-events:none;
+    }
+    .cursor-plus::before,
+    .cursor-plus::after{
+      content:"";
+      position:absolute;
+      left:0; top:0;
+      border:var(--cursor-stroke) solid currentColor;
+      transform:translate(-50%, -50%);
+    }
+    .cursor-plus::before{width:calc(var(--plus-size)*2);}
+    .cursor-plus::after{height:calc(var(--plus-size)*2);}
+
+    /* ======================
+       NAV
+    ====================== */
     .site-nav{
       position:fixed;
       top:40px;
       left:12px;
+      z-index:30;
       font-size:var(--text-size);
     }
     .site-nav a{
@@ -40,20 +89,52 @@
     }
     .site-nav a:hover{border-color:currentColor;}
 
-    /* MAIN */
+    /* ======================
+       MARQUEES
+    ====================== */
+    .marquee-wrap{
+      position:fixed;
+      left:0; right:0;
+      user-select:none;
+      z-index:20;
+      pointer-events:none;
+    }
+    .marquee-wrap.top{top:0; padding-top:8px;}
+    .marquee-wrap.bottom{bottom:0; padding-bottom:8px;}
+
+    .marquee{
+      display:flex;
+      white-space:nowrap;
+      gap:var(--phrase-gap);
+      animation:scroll 18s linear infinite;
+      font-size:var(--text-size);
+    }
+    .marquee .chunk{display:flex; gap:var(--phrase-gap);}
+    @keyframes scroll{
+      from{transform:translateX(0);}
+      to{transform:translateX(-50%);}
+    }
+    .marquee-wrap.top .marquee{animation-direction:reverse;}
+
+    /* ======================
+       MAIN
+    ====================== */
     .stage{
-      padding:120px 16px;
+      padding:120px 16px 100px;
       display:flex;
       justify-content:center;
       min-height:100vh;
+      z-index:10;
+      position:relative;
     }
 
     .frame{
       border:var(--stroke) solid currentColor;
       padding:28px;
       width:90vw;
-      max-width:680px;
-      background:rgba(0,0,0,0.2);
+      max-width:740px;
+      background:rgba(0,0,0,0.15);
+      backdrop-filter:blur(2px);
     }
 
     .title{
@@ -83,7 +164,9 @@
     }
     li{margin:6px 0;}
 
-    /* BUTTON */
+    /* ======================
+       RED EMAIL BUTTON
+    ====================== */
     .btn{
       border:var(--stroke) solid var(--btn-red);
       color:var(--btn-red);
@@ -98,13 +181,32 @@
       background:var(--btn-red);
       color:#000;
     }
+
+    @media(max-width:768px){
+      .btn{width:100%; text-align:center;}
+    }
   </style>
 </head>
 
 <body>
 
+  <!-- Background video -->
+  <video class="bg-video" autoplay muted loop playsinline preload="auto">
+    <source src="ggshop.mp4" type="video/mp4">
+  </video>
+  <div class="bg-video-overlay"></div>
+
+  <!-- Cursor -->
+  <div id="cursor" class="cursor-plus"></div>
+
+  <!-- Nav -->
   <div class="site-nav">
-    <a href="index.html">◀ back</a>
+    <a href="index.html">◀ back to grotto</a>
+  </div>
+
+  <!-- Top marquee -->
+  <div class="marquee-wrap top">
+    <div id="marqueeTop" class="marquee"></div>
   </div>
 
   <main class="stage">
@@ -114,35 +216,59 @@
       <div class="sub">(berkeley, ca — guerrilla furniture)</div>
 
       <p>
-        Eight forms are placed across campus.
-        Not marked.
-        Not announced.
+        Eight builds. Built with purpose. Built without permission.
       </p>
 
       <p>
-        They sit where they are needed.
-        They wait to be noticed.
+        They sit in the open—quiet interventions around the UC Berkeley campus.
+        Find every one.
       </p>
 
       <ul>
-        <li>find all eight</li>
         <li>complete the circuit</li>
-        <li>receive the mug</li>
-        <li>learn the final location</li>
+        <li>claim a grotto mug</li>
+        <li>receive the final location</li>
       </ul>
 
       <p>
-        Some things are only given
-        after moving through them.
+        Click send to receive instructions.
       </p>
 
       <a class="btn"
-        href="mailto:bluetilespace@gmail.com?subject=Issue%20001&body=Send%20instructions%20to%20begin.">
+        href="mailto:bluetilespace@gmail.com?subject=Issue%20001&body=Click%20send%20to%20receive%20instructions.">
         start
       </a>
 
     </section>
   </main>
+
+  <!-- Bottom marquee -->
+  <div class="marquee-wrap bottom">
+    <div id="marqueeBottom" class="marquee"></div>
+  </div>
+
+  <script>
+    /* Cursor */
+    const cursor = document.getElementById("cursor");
+    window.addEventListener("mousemove", (e) => {
+      cursor.style.transform = `translate(${e.clientX}px,${e.clientY}px)`;
+    });
+
+    /* Marquees */
+    const marqueeTop = document.getElementById("marqueeTop");
+    const marqueeBottom = document.getElementById("marqueeBottom");
+
+    function attach(target, text){
+      const a = document.createElement("div");
+      a.className = "chunk";
+      a.textContent = text;
+      const b = a.cloneNode(true);
+      target.append(a, b);
+    }
+
+    attach(marqueeTop, "Issue 001 — 8 builds — built with purpose — without permission");
+    attach(marqueeBottom, "find them all — claim a grotto mug");
+  </script>
 
 </body>
 </html>
